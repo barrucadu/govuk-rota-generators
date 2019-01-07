@@ -32,7 +32,7 @@ def random_oncall():
         num_times_inhours = random.randint(0, 25),
         num_times_shadow = 2,
         can_do_oncall = True,
-        num_times_oncall = random.randint(0, 25),
+        num_times_oncall = random.randint(2,3),
         forbidden_weeks = random_leave()
     )
 
@@ -93,6 +93,6 @@ var = rota.generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_s
 for week in range(num_weeks):
     print(f"\n== Week {week+1}:")
     for role in rota.Role:
-        for person in people.keys():
+        for person, p in people.items():
             if pulp.value(var[week, person, role.name]) == 1:
-                print(f"{role.name}: {person}")
+                print(f"{role.name}: {person} {p}")

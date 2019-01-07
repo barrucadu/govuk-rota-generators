@@ -80,122 +80,123 @@ Run `demo.py` for an example with 6 weeks:
 > python3 demo.py
 GLPSOL: GLPK LP/MIP Solver, v4.65
 Parameter(s) specified in the command line:
- --cpxlp /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/877b051632e24ca9af9ff2877413c828-pulp.lp
- -o /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/877b051632e24ca9af9ff2877413c828-pulp.sol
-Reading problem data from '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/877b051632e24ca9af9ff2877413c828-pulp.lp'...
-8568 rows, 2196 columns, 43848 non-zeros
-2196 integer variables, all of which are binary
-43555 lines were read
+ --cpxlp /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/03403d62a1d249538c54902180123d0f-pulp.lp
+ -o /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/03403d62a1d249538c54902180123d0f-pulp.sol
+Reading problem data from '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/03403d62a1d249538c54902180123d0f-pulp.lp'...
+11796 rows, 4788 columns, 52812 non-zeros
+4788 integer variables, 3492 of which are binary
+56098 lines were read
 GLPK Integer Optimizer, v4.65
-8568 rows, 2196 columns, 43848 non-zeros
-2196 integer variables, all of which are binary
+11796 rows, 4788 columns, 52812 non-zeros
+4788 integer variables, 3492 of which are binary
 Preprocessing...
 432 hidden packing inequaliti(es) were detected
-4571 rows, 1056 columns, 21610 non-zeros
-1056 integer variables, all of which are binary
+847 constraint coefficient(s) were reduced
+5821 rows, 2432 columns, 28757 non-zeros
+2432 integer variables, 1852 of which are binary
 Scaling...
- A: min|aij| =  1.000e+00  max|aij| =  1.000e+00  ratio =  1.000e+00
-Problem data seem to be well scaled
+ A: min|aij| =  1.000e+00  max|aij| =  4.500e+01  ratio =  4.500e+01
+GM: min|aij| =  4.617e-01  max|aij| =  2.166e+00  ratio =  4.690e+00
+EQ: min|aij| =  2.132e-01  max|aij| =  1.000e+00  ratio =  4.690e+00
+2N: min|aij| =  2.500e-01  max|aij| =  1.625e+00  ratio =  6.500e+00
 Constructing initial basis...
-Size of triangular part is 4379
+Size of triangular part is 5629
 Solving LP relaxation...
 GLPK Simplex Optimizer, v4.65
-4571 rows, 1056 columns, 21610 non-zeros
-      0: obj =  -0.000000000e+00 inf =   4.420e+02 (342)
-    309: obj =   8.688818182e+03 inf =   9.434e-14 (0) 1
-*   577: obj =   3.601900000e+04 inf =   5.630e-14 (0) 2
+5821 rows, 2432 columns, 28757 non-zeros
+      0: obj =  -0.000000000e+00 inf =   7.295e+02 (435)
+    915: obj =   1.079737500e+04 inf =   3.351e-14 (0) 5
+*  1267: obj =   3.603400000e+04 inf =   2.514e-13 (0) 3
 OPTIMAL LP SOLUTION FOUND
 Integer optimization begins...
 Long-step dual simplex will be used
-+   577: mip =     not found yet <=              +inf        (1; 0)
-+  1015: >>>>>   3.601900000e+04 <=   3.601900000e+04 < 0.1% (42; 0)
-+  1015: mip =   3.601900000e+04 <=     tree is empty   0.0% (0; 83)
++  1267: mip =     not found yet <=              +inf        (1; 0)
+Solution found by heuristic: 36034
++  2344: mip =   3.603400000e+04 <=     tree is empty   0.0% (0; 127)
 INTEGER OPTIMAL SOLUTION FOUND
-Time used:   0.9 secs
-Memory used: 9.2 Mb (9659496 bytes)
-Writing MIP solution to '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/877b051632e24ca9af9ff2877413c828-pulp.sol'...
+Time used:   5.1 secs
+Memory used: 12.5 Mb (13089158 bytes)
+Writing MIP solution to '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/03403d62a1d249538c54902180123d0f-pulp.sol'...
 
 == Week 1:
-PRIMARY: Delisa Polson
-SECONDARY: Verda Streit
-SHADOW: Brant Paskett
-PRIMARY_ONCALL: Hector Beckett
-SECONDARY_ONCALL: Danielle Bence
+PRIMARY: Kristen Youngren Person(team='F', can_do_inhours=True, num_times_inhours=7, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SECONDARY: Isaura Lafuente Person(team='C', can_do_inhours=True, num_times_inhours=0, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SHADOW: Brant Paskett Person(team='A', can_do_inhours=True, num_times_inhours=0, num_times_shadow=1, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+PRIMARY_ONCALL: Gussie Fridley Person(team='E', can_do_inhours=True, num_times_inhours=23, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: Delisa Polson Person(team='E', can_do_inhours=True, num_times_inhours=25, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
 
 == Week 2:
-PRIMARY: Helen Jarrard
-SECONDARY: Wilfredo Yoshida
-SHADOW: Arlette Mckeighan
-PRIMARY_ONCALL: Eleni Brandy
-SECONDARY_ONCALL: Galen Takemoto
+PRIMARY: Eura Joseph Person(team='A', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
+SECONDARY: Danielle Bence Person(team='C', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
+SHADOW: Camille Whitmarsh Person(team='B', can_do_inhours=True, num_times_inhours=0, num_times_shadow=0, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+PRIMARY_ONCALL: David Reifsteck Person(team='B', can_do_inhours=True, num_times_inhours=20, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: Elvira Stefani Person(team='D', can_do_inhours=True, num_times_inhours=18, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
 
 == Week 3:
-PRIMARY: David Reifsteck
-SECONDARY: Eura Joseph
-SHADOW: Breana Mar
-PRIMARY_ONCALL: Don Mong
-SECONDARY_ONCALL: Danielle Bence
+PRIMARY: Kristyn Wolverton Person(team='C', can_do_inhours=True, num_times_inhours=17, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SECONDARY: Brant Paskett Person(team='A', can_do_inhours=True, num_times_inhours=0, num_times_shadow=1, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SHADOW: Arlette Mckeighan Person(team='B', can_do_inhours=True, num_times_inhours=0, num_times_shadow=0, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+PRIMARY_ONCALL: Eleni Brandy Person(team='B', can_do_inhours=True, num_times_inhours=12, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: Helen Jarrard Person(team='C', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
 
 == Week 4:
-PRIMARY: Gussie Fridley
-SECONDARY: Eleni Brandy
-SHADOW: Arlette Mckeighan
-PRIMARY_ONCALL: Elvira Stefani
-SECONDARY_ONCALL: Galen Takemoto
+PRIMARY: Kristen Youngren Person(team='F', can_do_inhours=True, num_times_inhours=7, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SECONDARY: Isaura Lafuente Person(team='C', can_do_inhours=True, num_times_inhours=0, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SHADOW: Allyson Mirando Person(team='D', can_do_inhours=True, num_times_inhours=0, num_times_shadow=0, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+PRIMARY_ONCALL: Don Mong Person(team='B', can_do_inhours=True, num_times_inhours=14, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: Danielle Bence Person(team='C', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
 
 == Week 5:
-PRIMARY: Lynn Steinhauer
-SECONDARY: Santiago Mizer
-SHADOW: Brant Paskett
-PRIMARY_ONCALL: Eura Joseph
-SECONDARY_ONCALL: Helen Jarrard
+PRIMARY: Buffy Nowacki Person(team='D', can_do_inhours=True, num_times_inhours=0, num_times_shadow=1, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SECONDARY: Helen Jarrard Person(team='C', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
+SHADOW: Camille Whitmarsh Person(team='B', can_do_inhours=True, num_times_inhours=0, num_times_shadow=0, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+PRIMARY_ONCALL: Gussie Fridley Person(team='E', can_do_inhours=True, num_times_inhours=23, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: Delisa Polson Person(team='E', can_do_inhours=True, num_times_inhours=25, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
 
 == Week 6:
-PRIMARY: Galen Takemoto
-SECONDARY: Hector Beckett
-SHADOW: Breana Mar
-PRIMARY_ONCALL: David Reifsteck
-SECONDARY_ONCALL: Eleni Brandy
+PRIMARY: Katerine Greenwood Person(team='C', can_do_inhours=True, num_times_inhours=3, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SECONDARY: Wilfredo Yoshida Person(team='E', can_do_inhours=True, num_times_inhours=1, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SHADOW: Allyson Mirando Person(team='D', can_do_inhours=True, num_times_inhours=0, num_times_shadow=0, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+PRIMARY_ONCALL: Eleni Brandy Person(team='B', can_do_inhours=True, num_times_inhours=12, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: Danielle Bence Person(team='C', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
 
 == Week 7:
-PRIMARY: Elvira Stefani
-SECONDARY: Santiago Mizer
-SHADOW: Buffy Nowacki
-PRIMARY_ONCALL: Danielle Bence
-SECONDARY_ONCALL: Helen Jarrard
+PRIMARY: Don Mong Person(team='B', can_do_inhours=True, num_times_inhours=14, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY: Santiago Mizer Person(team='E', can_do_inhours=True, num_times_inhours=0, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SHADOW: Buffy Nowacki Person(team='D', can_do_inhours=True, num_times_inhours=0, num_times_shadow=1, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+PRIMARY_ONCALL: Elvira Stefani Person(team='D', can_do_inhours=True, num_times_inhours=18, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: Eura Joseph Person(team='A', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
 
 == Week 8:
-PRIMARY: Gussie Fridley
-SECONDARY: David Reifsteck
-SHADOW: Allyson Mirando
-PRIMARY_ONCALL: Hector Beckett
-SECONDARY_ONCALL: Galen Takemoto
+PRIMARY: David Reifsteck Person(team='B', can_do_inhours=True, num_times_inhours=20, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY: Verda Streit Person(team='E', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+PRIMARY_ONCALL: Eleni Brandy Person(team='B', can_do_inhours=True, num_times_inhours=12, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: Delisa Polson Person(team='E', can_do_inhours=True, num_times_inhours=25, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
 
 == Week 9:
-PRIMARY: Elvira Stefani
-SECONDARY: Verda Streit
-SHADOW: Camille Whitmarsh
-PRIMARY_ONCALL: Delisa Polson
-SECONDARY_ONCALL: Eleni Brandy
+PRIMARY: Leticia Grable Person(team='B', can_do_inhours=True, num_times_inhours=19, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SECONDARY: Helen Jarrard Person(team='C', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
+SHADOW: Breana Mar Person(team='A', can_do_inhours=True, num_times_inhours=0, num_times_shadow=1, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+PRIMARY_ONCALL: Don Mong Person(team='B', can_do_inhours=True, num_times_inhours=14, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: Danielle Bence Person(team='C', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
 
 == Week 10:
-PRIMARY: Mauro Au
-SECONDARY: Galen Takemoto
-SHADOW: Buffy Nowacki
-PRIMARY_ONCALL: Eura Joseph
-SECONDARY_ONCALL: Hector Beckett
+PRIMARY: Galen Takemoto Person(team='B', can_do_inhours=True, num_times_inhours=12, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
+SECONDARY: Wilfredo Yoshida Person(team='E', can_do_inhours=True, num_times_inhours=1, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+PRIMARY_ONCALL: Elvira Stefani Person(team='D', can_do_inhours=True, num_times_inhours=18, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: David Reifsteck Person(team='B', can_do_inhours=True, num_times_inhours=20, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
 
 == Week 11:
-PRIMARY: Werner Rosenblatt
-SECONDARY: Eleni Brandy
-SHADOW: Allyson Mirando
-PRIMARY_ONCALL: David Reifsteck
-SECONDARY_ONCALL: Elvira Stefani
+PRIMARY: Werner Rosenblatt Person(team='A', can_do_inhours=True, num_times_inhours=24, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SECONDARY: Nathanael Mejia Person(team='D', can_do_inhours=True, num_times_inhours=1, num_times_shadow=2, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+SHADOW: Arlette Mckeighan Person(team='B', can_do_inhours=True, num_times_inhours=0, num_times_shadow=0, can_do_oncall=False, num_times_oncall=0, forbidden_weeks=[])
+PRIMARY_ONCALL: Don Mong Person(team='B', can_do_inhours=True, num_times_inhours=14, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: Gussie Fridley Person(team='E', can_do_inhours=True, num_times_inhours=23, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
 
 == Week 12:
-PRIMARY: Hector Beckett
-SECONDARY: Wilfredo Yoshida
-SHADOW: Camille Whitmarsh
-PRIMARY_ONCALL: Eura Joseph
-SECONDARY_ONCALL: Don Mong
+PRIMARY: Delisa Polson Person(team='E', can_do_inhours=True, num_times_inhours=25, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
+SECONDARY: Eura Joseph Person(team='A', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
+SHADOW: Danielle Bence Person(team='C', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
+PRIMARY_ONCALL: David Reifsteck Person(team='B', can_do_inhours=True, num_times_inhours=20, num_times_shadow=2, can_do_oncall=True, num_times_oncall=2, forbidden_weeks=[])
+SECONDARY_ONCALL: Helen Jarrard Person(team='C', can_do_inhours=True, num_times_inhours=2, num_times_shadow=2, can_do_oncall=True, num_times_oncall=3, forbidden_weeks=[])
 ```
