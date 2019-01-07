@@ -5,7 +5,8 @@ import rota
 
 num_weeks = 6
 
-max_shifts_per_person = 2
+max_inhours_shifts_per_person = 2
+max_oncall_shifts_per_person = 3
 
 def random_person():
     teams = ['A', 'B', 'C', 'D', 'E', 'F']
@@ -44,7 +45,7 @@ people = {
     'Verda Streit': random_person()
 }
 
-var = rota.generate_model(num_weeks, max_shifts_per_person, people)
+var = rota.generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people)
 
 for week in range(num_weeks):
     print(f"\n== Week {week+1}:")

@@ -18,7 +18,7 @@ class Role(enum.Enum):
     SECONDARY_ONCALL = enum.auto()
 
 
-def generate_model(num_weeks, max_shifts_per_person, people):
+def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people):
     """Generate the mathematical model of the rota problem.
 
     TODO: "including earlier instances in this rota" parts
@@ -86,10 +86,13 @@ def generate_model(num_weeks, max_shifts_per_person, people):
         for forbidden_week in p.forbidden_weeks:
             prob += pulp.lpSum(rota[forbidden_week, person, role.name] for role in Role) == 0
 
-        # [2.4] Not be assigned more than `max_shifts_per_person` roles in total
-        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Role) <= max_shifts_per_person
+        # [2.4] Not be assigned more than `max_inhours_shifts_per_person` in-hours roles in total
+        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in [Role.PRIMARY, Role.SECONDARY, Role.SHADOW]) <= max_inhours_shifts_per_person
 
-        # [2.5] Not be in the same team as anyone on their shift
+        # [2.5] Not be assigned more than `max_oncall_shifts_per_person` out-of-hours roles in total
+        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in [Role.PRIMARY_ONCALL, Role.SECONDARY_ONCALL]) <= max_oncall_shifts_per_person
+
+        # [2.6] Not be in the same team as anyone on their shift
         for week in range(num_weeks):
             for person2, p2 in people.items():
                 if person == person2:

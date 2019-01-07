@@ -33,8 +33,9 @@ Subject to these constraints:
    1. not be assigned more than one role in the same week
    2. not be assigned roles in two adjacent weeks
    3. not be assigned a role in a week they cannot do
-   4. not be assigned more than `R` roles in total
-   5. not be in the same team as anyone on their shift
+   4. not be assigned more than `Ri` in-hours roles in total
+   5. not be assigned more than `Ro` out-of-hours roles in total
+   6. not be in the same team as anyone on their shift
 
 There's an asymmetry: the **primary** is required to be more
 experienced than the **secondary**, but the opposite is the case for
@@ -79,80 +80,81 @@ Run `demo.py` for an example with 6 weeks:
 > python3 demo.py
 GLPSOL: GLPK LP/MIP Solver, v4.65
 Parameter(s) specified in the command line:
- --cpxlp /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/cb272c9f601b4204ac21bffe261eef49-pulp.lp
- -o /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/cb272c9f601b4204ac21bffe261eef49-pulp.sol
-Reading problem data from '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/cb272c9f601b4204ac21bffe261eef49-pulp.lp'...
-1955 rows, 620 columns, 10565 non-zeros
+ --cpxlp /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/f3a48939985846f58568342b384abf09-pulp.lp
+ -o /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/f3a48939985846f58568342b384abf09-pulp.sol
+Reading problem data from '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/f3a48939985846f58568342b384abf09-pulp.lp'...
+1955 rows, 620 columns, 10345 non-zeros
 620 integer variables, all of which are binary
-10692 lines were read
+10477 lines were read
 GLPK Integer Optimizer, v4.65
-1955 rows, 620 columns, 10565 non-zeros
+1955 rows, 620 columns, 10345 non-zeros
 620 integer variables, all of which are binary
 Preprocessing...
 93 hidden packing inequaliti(es) were detected
-720 rows, 256 columns, 3748 non-zeros
-256 integer variables, all of which are binary
+1 hidden covering inequaliti(es) were detected
+763 rows, 258 columns, 3757 non-zeros
+258 integer variables, all of which are binary
 Scaling...
  A: min|aij| =  1.000e+00  max|aij| =  1.000e+00  ratio =  1.000e+00
 Problem data seem to be well scaled
 Constructing initial basis...
-Size of triangular part is 624
+Size of triangular part is 667
 Solving LP relaxation...
 GLPK Simplex Optimizer, v4.65
-720 rows, 256 columns, 3748 non-zeros
-      0: obj =   2.000000000e+03 inf =   1.270e+02 (69)
-    100: obj =   9.010666667e+03 inf =   8.836e-16 (0)
-*   203: obj =   2.001800000e+04 inf =   4.191e-15 (0) 1
+763 rows, 258 columns, 3757 non-zeros
+      0: obj =   1.000000000e+03 inf =   1.590e+02 (85)
+     99: obj =   8.176166667e+03 inf =   6.273e-15 (0)
+*   205: obj =   2.001800000e+04 inf =   2.819e-14 (0) 1
 OPTIMAL LP SOLUTION FOUND
 Integer optimization begins...
 Long-step dual simplex will be used
-+   203: mip =     not found yet <=              +inf        (1; 0)
-+   301: >>>>>   2.001800000e+04 <=   2.001800000e+04   0.0% (10; 0)
-+   301: mip =   2.001800000e+04 <=     tree is empty   0.0% (0; 19)
++   205: mip =     not found yet <=              +inf        (1; 0)
++   275: >>>>>   2.001800000e+04 <=   2.001800000e+04   0.0% (6; 0)
++   275: mip =   2.001800000e+04 <=     tree is empty   0.0% (0; 11)
 INTEGER OPTIMAL SOLUTION FOUND
 Time used:   0.0 secs
-Memory used: 2.1 Mb (2221476 bytes)
-Writing MIP solution to '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/cb272c9f601b4204ac21bffe261eef49-pulp.sol'...
+Memory used: 2.1 Mb (2189864 bytes)
+Writing MIP solution to '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/f3a48939985846f58568342b384abf09-pulp.sol'...
 
 == Week 1:
-PRIMARY: Camille Whitmarsh
-SECONDARY: Gussie Fridley
-SHADOW: Jessie Ahlquist
-PRIMARY_ONCALL: Santiago Mizer
-SECONDARY_ONCALL: Nathanael Mejia
+PRIMARY: Don Mong
+SECONDARY: Nathanael Mejia
+SHADOW: Arlette Mckeighan
+PRIMARY_ONCALL: Jessie Ahlquist
+SECONDARY_ONCALL: Verda Streit
 
 == Week 2:
-PRIMARY: Eleni Brandy
-SECONDARY: Danielle Bence
-SHADOW: Theodore Hagberg
-PRIMARY_ONCALL: Helen Jarrard
-SECONDARY_ONCALL: Elvira Stefani
+PRIMARY: Gussie Fridley
+SECONDARY: Katerine Greenwood
+SHADOW: Randell Gingras
+PRIMARY_ONCALL: Santiago Mizer
+SECONDARY_ONCALL: Buffy Nowacki
 
 == Week 3:
-PRIMARY: Arlette Mckeighan
-SECONDARY: Randell Gingras
-SHADOW: Verda Streit
-PRIMARY_ONCALL: Buffy Nowacki
-SECONDARY_ONCALL: Eura Joseph
+PRIMARY: Don Mong
+SECONDARY: Nathanael Mejia
+SHADOW: Jessie Ahlquist
+PRIMARY_ONCALL: Lucile Spanbauer
+SECONDARY_ONCALL: Leticia Grable
 
 == Week 4:
-PRIMARY: Elvira Stefani
-SECONDARY: Gussie Fridley
-SHADOW: Lucile Spanbauer
-PRIMARY_ONCALL: Santiago Mizer
-SECONDARY_ONCALL: Nathanael Mejia
+PRIMARY: Brant Paskett
+SECONDARY: Danielle Bence
+SHADOW: Buffy Nowacki
+PRIMARY_ONCALL: Arlette Mckeighan
+SECONDARY_ONCALL: Camille Whitmarsh
 
 == Week 5:
-PRIMARY: Arlette Mckeighan
-SECONDARY: Danielle Bence
-SHADOW: Jessie Ahlquist
-PRIMARY_ONCALL: Buffy Nowacki
-SECONDARY_ONCALL: Eleni Brandy
+PRIMARY: Santiago Mizer
+SECONDARY: Katerine Greenwood
+SHADOW: Randell Gingras
+PRIMARY_ONCALL: Jessie Ahlquist
+SECONDARY_ONCALL: Helen Jarrard
 
 == Week 6:
-PRIMARY: Camille Whitmarsh
-SECONDARY: Randell Gingras
-SHADOW: Theodore Hagberg
-PRIMARY_ONCALL: Helen Jarrard
-SECONDARY_ONCALL: Verda Streit
+PRIMARY: Brant Paskett
+SECONDARY: Danielle Bence
+SHADOW: Buffy Nowacki
+PRIMARY_ONCALL: Arlette Mckeighan
+SECONDARY_ONCALL: Leticia Grable
 ```
