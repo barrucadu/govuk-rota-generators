@@ -57,7 +57,6 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
 
     # Auxilliary decision variable for if-then constructs
     # http://www.yzuda.org/Useful_Links/optimization/if-then-else-02.html
-    m = 999999999
     d = pulp.LpVariable.dicts('d', ((week, person, role.name) for week in range(num_weeks) for person in people.keys() for role in Role), cat='Binary')
 
     ### Constraints
