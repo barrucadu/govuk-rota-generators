@@ -53,6 +53,13 @@ broken by optimisation:
 If there are multiple equally good rotas which meet the constraints,
 then ties are broken arbitrarily.
 
+## Dependencies
+
+You need [GLPK][], the GNU Linear Programming Kit, installed and in
+your `$PATH`.
+
+[GLPK]: https://www.gnu.org/software/glpk/
+
 ## Mathematical background
 
 This uses an approach called [integer linear programming][] (ILP), via
