@@ -23,13 +23,15 @@ def generate_model(num_weeks, max_shifts_per_person, people):
 
     TODO: "including earlier instances in this rota" parts
     TODO: 2.5
-    TODO: optimisations
+    TODO: optimisation 1
     """
 
-    prob = pulp.LpProblem('2ndline rota')
+    prob = pulp.LpProblem(name='2ndline rota', sense=pulp.LpMaximize)
 
     # Model the rota as a [num weeks x num people x num roles] matrix, where rota[week,person,role] == that person has that role for that week.
     rota = pulp.LpVariable.dicts('rota', ((week, person, role.name) for week in range(num_weeks) for person in people.keys() for role in Role), cat='Binary')
+
+    ### Constraints
 
     # In every week:
     for week in range(num_weeks):
@@ -81,6 +83,21 @@ def generate_model(num_weeks, max_shifts_per_person, people):
 
         # [2.4] Not be assigned more than `max_shifts_per_person` roles in total
         prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Role) <= max_shifts_per_person
+
+    ### Optimisations
+
+    # [1] TODO: Minimise the maximum number of roles-assignments any one person has
+
+    # [2] Maximise the number of weeks where secondary has been on in-hours support fewer than 3 times
+    obj = pulp.lpSum(rota[week, person, role.SECONDARY.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_inhours < 3)
+
+    # [3] Maximise the number of weeks where primary oncall has been on out-of-hours support fewer than 3 times
+    obj += pulp.lpSum(rota[week, person, role.PRIMARY_ONCALL.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_oncall < 3)
+
+    # [4] Maximise the number of weeks with a shadow
+    obj += pulp.lpSum(rota[week, person, role.SHADOW.name] for week in range(num_weeks) for person in people.keys())
+
+    prob += obj
 
     prob.solve(pulp.solvers.GLPK())
     return rota

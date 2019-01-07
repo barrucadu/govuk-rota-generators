@@ -79,72 +79,77 @@ Run `demo.py` for an example with 6 weeks:
 > python3 demo.py
 GLPSOL: GLPK LP/MIP Solver, v4.65
 Parameter(s) specified in the command line:
- --cpxlp /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/68a363799c6741bf9cdb0b09df9d2156-pulp.lp
- -o /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/68a363799c6741bf9cdb0b09df9d2156-pulp.sol
-Reading problem data from '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/68a363799c6741bf9cdb0b09df9d2156-pulp.lp'...
-1485 rows, 601 columns, 6355 non-zeros
+ --cpxlp /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/e82b1da0e5224488ad4ffa823c36d068-pulp.lp
+ -o /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/e82b1da0e5224488ad4ffa823c36d068-pulp.sol
+Reading problem data from '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/e82b1da0e5224488ad4ffa823c36d068-pulp.lp'...
+1486 rows, 600 columns, 6360 non-zeros
 600 integer variables, all of which are binary
-6569 lines were read
+6757 lines were read
 GLPK Integer Optimizer, v4.65
-1485 rows, 601 columns, 6355 non-zeros
+1486 rows, 600 columns, 6360 non-zeros
 600 integer variables, all of which are binary
 Preprocessing...
-342 rows, 255 columns, 2198 non-zeros
-255 integer variables, all of which are binary
+328 rows, 260 columns, 2216 non-zeros
+260 integer variables, all of which are binary
 Scaling...
  A: min|aij| =  1.000e+00  max|aij| =  1.000e+00  ratio =  1.000e+00
 Problem data seem to be well scaled
 Constructing initial basis...
-Size of triangular part is 246
+Size of triangular part is 232
 Solving LP relaxation...
 GLPK Simplex Optimizer, v4.65
-342 rows, 255 columns, 2198 non-zeros
-      0: obj =   0.000000000e+00 inf =   6.300e+01 (14)
-     46: obj =   0.000000000e+00 inf =   0.000e+00 (0)
+328 rows, 260 columns, 2216 non-zeros
+      0: obj =  -0.000000000e+00 inf =   4.800e+01 (23)
+     42: obj =   1.000000000e+01 inf =   0.000e+00 (0)
+*    83: obj =   1.600000000e+01 inf =   0.000e+00 (0)
 OPTIMAL LP SOLUTION FOUND
 Integer optimization begins...
 Long-step dual simplex will be used
-+    46: mip =     not found yet >=              -inf        (1; 0)
-+    46: >>>>>   0.000000000e+00 >=   0.000000000e+00   0.0% (1; 0)
-+    46: mip =   0.000000000e+00 >=     tree is empty   0.0% (0; 1)
++    83: mip =     not found yet <=              +inf        (1; 0)
++    83: >>>>>   1.600000000e+01 <=   1.600000000e+01   0.0% (1; 0)
++    83: mip =   1.600000000e+01 <=     tree is empty   0.0% (0; 1)
 INTEGER OPTIMAL SOLUTION FOUND
 Time used:   0.0 secs
-Memory used: 1.4 Mb (1486124 bytes)
-Writing MIP solution to '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/68a363799c6741bf9cdb0b09df9d2156-pulp.sol'...
+Memory used: 1.4 Mb (1493988 bytes)
+Writing MIP solution to '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/e82b1da0e5224488ad4ffa823c36d068-pulp.sol'...
 
 == Week 1:
-PRIMARY: Danielle Bence
-SECONDARY: Nathanael Mejia
-PRIMARY_ONCALL: Lucile Spanbauer
-SECONDARY_ONCALL: Elvira Stefani
+PRIMARY: Helen Jarrard
+SECONDARY: Lucile Spanbauer
+SHADOW: Leticia Grable
+PRIMARY_ONCALL: Theodore Hagberg
+SECONDARY_ONCALL: Danielle Bence
 
 == Week 2:
-PRIMARY: Eura Joseph
-SECONDARY: Buffy Nowacki
-PRIMARY_ONCALL: Arlette Mckeighan
+PRIMARY: Eleni Brandy
+SECONDARY: Arlette Mckeighan
+PRIMARY_ONCALL: Randell Gingras
 SECONDARY_ONCALL: Brant Paskett
 
 == Week 3:
-PRIMARY: Danielle Bence
-SECONDARY: Don Mong
-PRIMARY_ONCALL: Elvira Stefani
+PRIMARY: Gussie Fridley
+SECONDARY: Camille Whitmarsh
+SHADOW: Jessie Ahlquist
+PRIMARY_ONCALL: Buffy Nowacki
 SECONDARY_ONCALL: Verda Streit
 
 == Week 4:
-PRIMARY: Eleni Brandy
-SECONDARY: Buffy Nowacki
-PRIMARY_ONCALL: Arlette Mckeighan
+PRIMARY: Theodore Hagberg
+SECONDARY: Arlette Mckeighan
+SHADOW: Leticia Grable
+PRIMARY_ONCALL: Elvira Stefani
 SECONDARY_ONCALL: Brant Paskett
 
 == Week 5:
-PRIMARY: Randell Gingras
-SECONDARY: Leticia Grable
-PRIMARY_ONCALL: Verda Streit
-SECONDARY_ONCALL: Helen Jarrard
+PRIMARY: Gussie Fridley
+SECONDARY: Camille Whitmarsh
+SHADOW: Jessie Ahlquist
+PRIMARY_ONCALL: Buffy Nowacki
+SECONDARY_ONCALL: Katerine Greenwood
 
 == Week 6:
-PRIMARY: Don Mong
-SECONDARY: Eleni Brandy
-PRIMARY_ONCALL: Eura Joseph
-SECONDARY_ONCALL: Gussie Fridley
+PRIMARY: Eleni Brandy
+SECONDARY: Don Mong
+PRIMARY_ONCALL: Elvira Stefani
+SECONDARY_ONCALL: Verda Streit
 ```
