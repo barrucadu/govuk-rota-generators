@@ -22,13 +22,15 @@ def generate_model(num_weeks, max_shifts_per_person, people):
     """Generate the mathematical model of the rota problem.
 
     TODO: "including earlier instances in this rota" parts
-    TODO: optimisation 1
     """
 
     prob = pulp.LpProblem(name='2ndline rota', sense=pulp.LpMaximize)
 
     # Model the rota as a [num weeks x num people x num roles] matrix, where rota[week,person,role] == that person has that role for that week.
     rota = pulp.LpVariable.dicts('rota', ((week, person, role.name) for week in range(num_weeks) for person in people.keys() for role in Role), cat='Binary')
+
+    # Auxilliary variables to track if someone is assigned
+    assigned = pulp.LpVariable.dicts('assigned', people.keys(), cat='Binary')
 
     ### Constraints
 
@@ -66,6 +68,10 @@ def generate_model(num_weeks, max_shifts_per_person, people):
 
     # A person must:
     for person, p in people.items():
+        # Constrain 'assigned' auxilliary variable.
+        for week in range(num_weeks):
+            prob += assigned[person] >= pulp.lpSum(rota[week, person, role.name] for role in Role)
+
         # [2.1] Not be assigned more than one role in the same week
         for week in range(num_weeks):
             prob += pulp.lpSum(rota[week, person, role.name] for role in Role) <= 1
@@ -94,10 +100,13 @@ def generate_model(num_weeks, max_shifts_per_person, people):
 
     ### Optimisations
 
-    # [1] TODO: Minimise the maximum number of roles-assignments any one person has
+    # [1] Minimise the maximum number of roles-assignments any one person has
+    # or: Maximise the number of people with assignments
+    # This is more important than the other optimisations (which are about reducing weeks which are bad in a fairly minor way) so give it a *1000 factor
+    obj = pulp.lpSum(assigned[person] for person in people.keys()) * 1000
 
     # [2] Maximise the number of weeks where secondary has been on in-hours support fewer than 3 times
-    obj = pulp.lpSum(rota[week, person, role.SECONDARY.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_inhours < 3)
+    obj += pulp.lpSum(rota[week, person, role.SECONDARY.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_inhours < 3)
 
     # [3] Maximise the number of weeks where primary oncall has been on out-of-hours support fewer than 3 times
     obj += pulp.lpSum(rota[week, person, role.PRIMARY_ONCALL.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_oncall < 3)
