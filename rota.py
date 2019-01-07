@@ -82,4 +82,5 @@ def generate_model(num_weeks, max_shifts_per_person, people):
         # [2.4] Not be assigned more than `max_shifts_per_person` roles in total
         prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Role) <= max_shifts_per_person
 
-    reurn (rota, prob)
+    prob.solve(pulp.solvers.GLPK())
+    return rota
