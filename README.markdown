@@ -74,7 +74,7 @@ docs][].
 
 ## Demo
 
-Run `demo.py` for an example with 6 weeks:
+Run `demo.py` for an example with 12 weeks:
 
 ```
 > python3 demo.py
