@@ -22,7 +22,6 @@ def generate_model(num_weeks, max_shifts_per_person, people):
     """Generate the mathematical model of the rota problem.
 
     TODO: "including earlier instances in this rota" parts
-    TODO: 2.5
     TODO: optimisation 1
     """
 
@@ -83,6 +82,15 @@ def generate_model(num_weeks, max_shifts_per_person, people):
 
         # [2.4] Not be assigned more than `max_shifts_per_person` roles in total
         prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Role) <= max_shifts_per_person
+
+        # [2.5] Not be in the same team as anyone on their shift
+        for week in range(num_weeks):
+            for person2, p2 in people.items():
+                if person == person2:
+                    continue
+                if p.team != p2.team:
+                    continue
+                prob += pulp.lpSum(rota[week, person, role.name] for role in Role) + pulp.lpSum(rota[week, person2, role.name] for role in Role) <= 1
 
     ### Optimisations
 
