@@ -33,7 +33,7 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     # Model the rota as a [num weeks x num people x num roles] matrix, where rota[week,person,role] == that person has that role for that week.
     rota = pulp.LpVariable.dicts('rota', ((week, person, role.name) for week in range(num_weeks) for person in people.keys() for role in Role), cat='Binary')
 
-    # Auxilliary variables to track if someone is assigned
+    # Auxilliary variable to track if someone is assigned
     assigned = pulp.LpVariable.dicts('assigned', people.keys(), cat='Binary')
 
     ### Constraints
