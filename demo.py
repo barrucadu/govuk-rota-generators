@@ -12,7 +12,7 @@ def random_team():
     return random.choice(['A', 'B', 'C', 'D', 'E', 'F'])
 
 def random_leave():
-    return random.sample(range(0, num_weeks), random.randint(0, 0))
+    return random.sample(range(0, num_weeks), random.randint(0, 2))
 
 def random_shadow():
     return rota.Person(
