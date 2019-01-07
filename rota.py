@@ -18,6 +18,10 @@ class Role(enum.Enum):
     SECONDARY_ONCALL = enum.auto()
 
 
+in_hours_roles = [Role.PRIMARY, Role.SECONDARY, Role.SHADOW]
+on_call_roles  = [Role.PRIMARY_ONCALL, Role.SECONDARY_ONCALL]
+
+
 def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people):
     """Generate the mathematical model of the rota problem.
 
@@ -87,19 +91,19 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
             prob += pulp.lpSum(rota[forbidden_week, person, role.name] for role in Role) == 0
 
         # [2.4] Not be assigned more than `max_inhours_shifts_per_person` in-hours roles in total
-        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in [Role.PRIMARY, Role.SECONDARY, Role.SHADOW]) <= max_inhours_shifts_per_person
+        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in in_hours_roles) <= max_inhours_shifts_per_person
 
         # [2.5] Not be assigned more than `max_oncall_shifts_per_person` out-of-hours roles in total
-        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in [Role.PRIMARY_ONCALL, Role.SECONDARY_ONCALL]) <= max_oncall_shifts_per_person
+        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in on_call_roles) <= max_oncall_shifts_per_person
 
-        # [2.6] Not be in the same team as anyone on their shift
+        # [2.6] Not be on in-hours support in the same week that someone else from their team is also on in-hours support
         for week in range(num_weeks):
             for person2, p2 in people.items():
                 if person == person2:
                     continue
                 if p.team != p2.team:
                     continue
-                prob += pulp.lpSum(rota[week, person, role.name] for role in Role) + pulp.lpSum(rota[week, person2, role.name] for role in Role) <= 1
+                prob += pulp.lpSum(rota[week, person, role.name] for role in in_hours_roles) + pulp.lpSum(rota[week, person2, role.name] for role in in_hours_roles) <= 1
 
     ### Optimisations
 
