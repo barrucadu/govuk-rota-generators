@@ -3,46 +3,89 @@ import random
 
 import rota
 
-num_weeks = 6
+num_weeks = 12
 
 max_inhours_shifts_per_person = 2
 max_oncall_shifts_per_person = 3
 
-def random_person():
-    teams = ['A', 'B', 'C', 'D', 'E', 'F']
-    is_shadow = random.choice([True, False, False, False])
+def random_team():
+    return random.choice(['A', 'B', 'C', 'D', 'E', 'F'])
+
+def random_leave():
+    return random.sample(range(0, num_weeks), random.randint(0, 0))
+
+def random_shadow():
     return rota.Person(
-        team = random.choice(teams),
-        can_do_inhours = random.choice([True, True, True, True, False]),
-        num_times_inhours = 0 if is_shadow else random.randint(0, 10),
-        num_times_shadow = random.randint(0, 1) if is_shadow else 2,
-        can_do_oncall = random.choice([True, True, True, True, False]),
-        num_times_oncall = random.randint(0, 10),
-        forbidden_weeks = random.sample(range(0, num_weeks), random.randint(0, 2))
+        team = random_team(),
+        can_do_inhours = True,
+        num_times_inhours = 0,
+        num_times_shadow = random.randint(0, 1),
+        can_do_oncall = False,
+        num_times_oncall = 0,
+        forbidden_weeks = random_leave()
+    )
+
+def random_oncall():
+    return rota.Person(
+        team = random_team(),
+        can_do_inhours = True,
+        num_times_inhours = random.randint(0, 25),
+        num_times_shadow = 2,
+        can_do_oncall = True,
+        num_times_oncall = random.randint(0, 25),
+        forbidden_weeks = random_leave()
+    )
+
+def random_inhours():
+    return rota.Person(
+        team = random_team(),
+        can_do_inhours = True,
+        num_times_inhours = random.randint(0, 25),
+        num_times_shadow = 2,
+        can_do_oncall = False,
+        num_times_oncall = 0,
+        forbidden_weeks = random_leave()
     )
 
 # http://listofrandomnames.com/
+# 6 shadows; 30 non-shadows, 11 of which are oncall
 people = {
-    'Arlette Mckeighan': random_person(),
-    'Brant Paskett': random_person(),
-    'Buffy Nowacki': random_person(),
-    'Camille Whitmarsh': random_person(),
-    'Danielle Bence': random_person(),
-    'Don Mong': random_person(),
-    'Eleni Brandy': random_person(),
-    'Elvira Stefani': random_person(),
-    'Eura Joseph': random_person(),
-    'Gussie Fridley': random_person(),
-    'Helen Jarrard': random_person(),
-    'Jessie Ahlquist': random_person(),
-    'Katerine Greenwood': random_person(),
-    'Leticia Grable': random_person(),
-    'Lucile Spanbauer': random_person(),
-    'Nathanael Mejia': random_person(),
-    'Randell Gingras': random_person(),
-    'Santiago Mizer': random_person(),
-    'Theodore Hagberg': random_person(),
-    'Verda Streit': random_person()
+    'Allyson Mirando': random_shadow(),
+    'Arlette Mckeighan': random_shadow(),
+    'Brant Paskett': random_shadow(),
+    'Breana Mar': random_shadow(),
+    'Buffy Nowacki': random_shadow(),
+    'Camille Whitmarsh': random_shadow(),
+    'Danielle Bence': random_oncall(),
+    'David Reifsteck': random_oncall(),
+    'Delisa Polson': random_oncall(),
+    'Don Mong': random_oncall(),
+    'Eleni Brandy': random_oncall(),
+    'Elvira Stefani': random_oncall(),
+    'Eura Joseph': random_oncall(),
+    'Galen Takemoto': random_oncall(),
+    'Gussie Fridley': random_oncall(),
+    'Hector Beckett': random_oncall(),
+    'Helen Jarrard': random_oncall(),
+    'Isaura Lafuente': random_inhours(),
+    'Jessie Ahlquist': random_inhours(),
+    'Katerine Greenwood': random_inhours(),
+    'Kristen Youngren': random_inhours(),
+    'Kristyn Wolverton': random_inhours(),
+    'Leticia Grable': random_inhours(),
+    'Lucile Spanbauer': random_inhours(),
+    'Lynn Steinhauer': random_inhours(),
+    'Mauro Au': random_inhours(),
+    'Nathanael Mejia': random_inhours(),
+    'Randell Gingras': random_inhours(),
+    'Raye Slone': random_inhours(),
+    'Reynalda Botelho': random_inhours(),
+    'Santiago Mizer': random_inhours(),
+    'Sergio Mcdevitt': random_inhours(),
+    'Theodore Hagberg': random_inhours(),
+    'Verda Streit': random_inhours(),
+    'Werner Rosenblatt': random_inhours(),
+    'Wilfredo Yoshida': random_inhours()
 }
 
 var = rota.generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people)

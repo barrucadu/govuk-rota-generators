@@ -80,81 +80,122 @@ Run `demo.py` for an example with 6 weeks:
 > python3 demo.py
 GLPSOL: GLPK LP/MIP Solver, v4.65
 Parameter(s) specified in the command line:
- --cpxlp /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/f3a48939985846f58568342b384abf09-pulp.lp
- -o /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/f3a48939985846f58568342b384abf09-pulp.sol
-Reading problem data from '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/f3a48939985846f58568342b384abf09-pulp.lp'...
-1955 rows, 620 columns, 10345 non-zeros
-620 integer variables, all of which are binary
-10477 lines were read
+ --cpxlp /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/5df2e5a9956149628d4fc6ceb6ef8398-pulp.lp
+ -o /var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/5df2e5a9956149628d4fc6ceb6ef8398-pulp.sol
+Reading problem data from '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/5df2e5a9956149628d4fc6ceb6ef8398-pulp.lp'...
+8160 rows, 2196 columns, 51960 non-zeros
+2196 integer variables, all of which are binary
+52049 lines were read
 GLPK Integer Optimizer, v4.65
-1955 rows, 620 columns, 10345 non-zeros
-620 integer variables, all of which are binary
+8160 rows, 2196 columns, 51960 non-zeros
+2196 integer variables, all of which are binary
 Preprocessing...
-93 hidden packing inequaliti(es) were detected
-1 hidden covering inequaliti(es) were detected
-763 rows, 258 columns, 3757 non-zeros
-258 integer variables, all of which are binary
+432 hidden packing inequaliti(es) were detected
+4151 rows, 1020 columns, 21964 non-zeros
+1020 integer variables, all of which are binary
 Scaling...
  A: min|aij| =  1.000e+00  max|aij| =  1.000e+00  ratio =  1.000e+00
 Problem data seem to be well scaled
 Constructing initial basis...
-Size of triangular part is 667
+Size of triangular part is 3959
 Solving LP relaxation...
 GLPK Simplex Optimizer, v4.65
-763 rows, 258 columns, 3757 non-zeros
-      0: obj =   1.000000000e+03 inf =   1.590e+02 (85)
-     99: obj =   8.176166667e+03 inf =   6.273e-15 (0)
-*   205: obj =   2.001800000e+04 inf =   2.819e-14 (0) 1
+4151 rows, 1020 columns, 21964 non-zeros
+      0: obj =  -0.000000000e+00 inf =   3.930e+02 (268)
+    318: obj =   7.795250000e+03 inf =   8.032e-14 (0) 1
+*   575: obj =   3.602800000e+04 inf =   1.376e-13 (0) 2
 OPTIMAL LP SOLUTION FOUND
 Integer optimization begins...
 Long-step dual simplex will be used
-+   205: mip =     not found yet <=              +inf        (1; 0)
-+   275: >>>>>   2.001800000e+04 <=   2.001800000e+04   0.0% (6; 0)
-+   275: mip =   2.001800000e+04 <=     tree is empty   0.0% (0; 11)
++   575: mip =     not found yet <=              +inf        (1; 0)
++  1458: >>>>>   3.602800000e+04 <=   3.602800000e+04   0.0% (45; 5)
++  1458: mip =   3.602800000e+04 <=     tree is empty   0.0% (0; 99)
 INTEGER OPTIMAL SOLUTION FOUND
-Time used:   0.0 secs
-Memory used: 2.1 Mb (2189864 bytes)
-Writing MIP solution to '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/f3a48939985846f58568342b384abf09-pulp.sol'...
+Time used:   1.3 secs
+Memory used: 10.0 Mb (10465688 bytes)
+Writing MIP solution to '/var/folders/7v/3zz_qp2x7d51b4bp2_cg0fgh0000l2/T/5df2e5a9956149628d4fc6ceb6ef8398-pulp.sol'...
 
 == Week 1:
-PRIMARY: Don Mong
-SECONDARY: Nathanael Mejia
-SHADOW: Arlette Mckeighan
-PRIMARY_ONCALL: Jessie Ahlquist
-SECONDARY_ONCALL: Verda Streit
+PRIMARY: Gussie Fridley
+SECONDARY: Delisa Polson
+SHADOW: Allyson Mirando
+PRIMARY_ONCALL: Don Mong
+SECONDARY_ONCALL: Elvira Stefani
 
 == Week 2:
-PRIMARY: Gussie Fridley
-SECONDARY: Katerine Greenwood
-SHADOW: Randell Gingras
-PRIMARY_ONCALL: Santiago Mizer
-SECONDARY_ONCALL: Buffy Nowacki
+PRIMARY: Isaura Lafuente
+SECONDARY: Nathanael Mejia
+SHADOW: Arlette Mckeighan
+PRIMARY_ONCALL: David Reifsteck
+SECONDARY_ONCALL: Galen Takemoto
 
 == Week 3:
-PRIMARY: Don Mong
-SECONDARY: Nathanael Mejia
-SHADOW: Jessie Ahlquist
-PRIMARY_ONCALL: Lucile Spanbauer
-SECONDARY_ONCALL: Leticia Grable
+PRIMARY: Lynn Steinhauer
+SECONDARY: Wilfredo Yoshida
+SHADOW: Camille Whitmarsh
+PRIMARY_ONCALL: Helen Jarrard
+SECONDARY_ONCALL: Eleni Brandy
 
 == Week 4:
-PRIMARY: Brant Paskett
-SECONDARY: Danielle Bence
-SHADOW: Buffy Nowacki
-PRIMARY_ONCALL: Arlette Mckeighan
-SECONDARY_ONCALL: Camille Whitmarsh
+PRIMARY: Lucile Spanbauer
+SECONDARY: Kristyn Wolverton
+SHADOW: Arlette Mckeighan
+PRIMARY_ONCALL: Danielle Bence
+SECONDARY_ONCALL: Elvira Stefani
 
 == Week 5:
-PRIMARY: Santiago Mizer
-SECONDARY: Katerine Greenwood
-SHADOW: Randell Gingras
-PRIMARY_ONCALL: Jessie Ahlquist
-SECONDARY_ONCALL: Helen Jarrard
+PRIMARY: Eura Joseph
+SECONDARY: David Reifsteck
+SHADOW: Breana Mar
+PRIMARY_ONCALL: Don Mong
+SECONDARY_ONCALL: Delisa Polson
 
 == Week 6:
-PRIMARY: Brant Paskett
-SECONDARY: Danielle Bence
+PRIMARY: Kristen Youngren
+SECONDARY: Jessie Ahlquist
+SHADOW: Brant Paskett
+PRIMARY_ONCALL: Danielle Bence
+SECONDARY_ONCALL: Gussie Fridley
+
+== Week 7:
+PRIMARY: Delisa Polson
+SECONDARY: Wilfredo Yoshida
 SHADOW: Buffy Nowacki
-PRIMARY_ONCALL: Arlette Mckeighan
-SECONDARY_ONCALL: Leticia Grable
+PRIMARY_ONCALL: David Reifsteck
+SECONDARY_ONCALL: Elvira Stefani
+
+== Week 8:
+PRIMARY: Gussie Fridley
+SECONDARY: Eleni Brandy
+SHADOW: Camille Whitmarsh
+PRIMARY_ONCALL: Helen Jarrard
+SECONDARY_ONCALL: Eura Joseph
+
+== Week 9:
+PRIMARY: Kristen Youngren
+SECONDARY: Jessie Ahlquist
+SHADOW: Breana Mar
+PRIMARY_ONCALL: David Reifsteck
+SECONDARY_ONCALL: Delisa Polson
+
+== Week 10:
+PRIMARY: Eleni Brandy
+SECONDARY: Nathanael Mejia
+SHADOW: Brant Paskett
+PRIMARY_ONCALL: Don Mong
+SECONDARY_ONCALL: Hector Beckett
+
+== Week 11:
+PRIMARY: Eura Joseph
+SECONDARY: Isaura Lafuente
+SHADOW: Allyson Mirando
+PRIMARY_ONCALL: Helen Jarrard
+SECONDARY_ONCALL: Delisa Polson
+
+== Week 12:
+PRIMARY: Lucile Spanbauer
+SECONDARY: Galen Takemoto
+SHADOW: Buffy Nowacki
+PRIMARY_ONCALL: Danielle Bence
+SECONDARY_ONCALL: Gussie Fridley
 ```
