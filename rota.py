@@ -22,10 +22,24 @@ in_hours_roles = [Role.PRIMARY, Role.SECONDARY, Role.SHADOW]
 on_call_roles  = [Role.PRIMARY_ONCALL, Role.SECONDARY_ONCALL]
 
 
+def if_then(prob, var_a, k, var_b, var_d):
+    """Translate 'if var_a > k then var_b >= 0' into ILP constraints.
+
+    'var_d' must be a fresh decision variable.
+
+    See http://www.yzuda.org/Useful_Links/optimization/if-then-else-02.html
+    """
+
+    # a number bigger than the number of times someone can actually be on shift
+    m = 999999999
+
+    prob += var_a - k + m * var_d >= 1
+    prob += var_b + m * var_d >= 0
+    prob += var_a - k <= 0 + m * (1 - var_d)
+
+
 def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people):
     """Generate the mathematical model of the rota problem.
-
-    TODO: "including earlier instances in this rota" parts
     """
 
     prob = pulp.LpProblem(name='2ndline rota', sense=pulp.LpMaximize)
@@ -36,10 +50,31 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     # Auxilliary variable to track if someone is assigned
     assigned = pulp.LpVariable.dicts('assigned', people.keys(), cat='Binary')
 
+    # Auxilliary variables to track the number of times someone has shadowed, been a non-shadow in-hours, or been on-call
+    times_shadow  = pulp.LpVariable.dicts('times_shadow',  ((week, person) for week in range(num_weeks) for person in people.keys()), cat='Integer')
+    times_inhours = pulp.LpVariable.dicts('times_inhours', ((week, person) for week in range(num_weeks) for person in people.keys()), cat='Integer')
+    times_oncall  = pulp.LpVariable.dicts('times_oncall',  ((week, person) for week in range(num_weeks) for person in people.keys()), cat='Integer')
+
+    # Auxilliary decision variable for if-then constructs
+    # http://www.yzuda.org/Useful_Links/optimization/if-then-else-02.html
+    m = 999999999
+    d = pulp.LpVariable.dicts('d', ((week, person, role.name) for week in range(num_weeks) for person in people.keys() for role in Role), cat='Binary')
+
     ### Constraints
 
     # In every week:
     for week in range(num_weeks):
+        # Constrain 'times_shadowed', 'times_inhoursed', and 'times_oncalled' auxilliary variables.
+        for person, p in people.items():
+            if week == 0:
+                prob += times_shadow[week, person]  == p.num_times_shadow
+                prob += times_inhours[week, person] == p.num_times_inhours
+                prob += times_oncall[week, person]  == p.num_times_oncall
+            else:
+                prob += times_shadow[week, person]  == times_shadow[week - 1, person]  + rota[week - 1, person, Role.SHADOW.name]
+                prob += times_inhours[week, person] == times_inhours[week - 1, person] + rota[week - 1, person, Role.PRIMARY.name]        + rota[week - 1, person, Role.SECONDARY.name]
+                prob += times_oncall[week, person]  == times_oncall[week - 1, person]  + rota[week - 1, person, Role.PRIMARY_ONCALL.name] + rota[week - 1, person, Role.SECONDARY_ONCALL.name]
+
         # [1.1] Each role must be assigned to exactly one person, except shadow which may be unassigned.
         for role in Role:
             prob += pulp.lpSum(rota[week, person, Role.PRIMARY.name]          for person in people.keys()) == 1
@@ -60,21 +95,22 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
             prob += rota[week, person, Role.PRIMARY_ONCALL.name]   <= (1 if p.can_do_oncall  else 0)
             prob += rota[week, person, Role.SECONDARY_ONCALL.name] <= (1 if p.can_do_oncall  else 0)
 
-        # [1.2.2] Primary must: have been on in-hours support at least 3 times (TODO: including earlier instances in this rota)
-        # [1.3.2] Secondary must: have shadowed at least twice (TODO: including earlier instances in this rota)
-        # [1.4.2] Shadow must: have shadowed at most once before (TODO: including earlier instances in this rota)
-        # [1.6.2] Secondary oncall must: have done out-of-hours support at least 3 times (TODO: including earlier instances in this rota)
-        for person, p in people.items():
-            prob += rota[week, person, Role.PRIMARY.name]          <= (1 if p.num_times_inhours >= 3 else 0)
-            prob += rota[week, person, Role.SECONDARY.name]        <= (1 if p.num_times_shadow  >= 2 else 0)
-            prob += rota[week, person, Role.SHADOW.name]           <= (1 if p.num_times_shadow  <= 1 else 0)
-            prob += rota[week, person, Role.SECONDARY_ONCALL.name] <= (1 if p.num_times_oncall  >= 3 else 0)
+        # [1.2.2] Primary must: have been on in-hours support at least 3 times
+        # [1.3.2] Secondary must: have shadowed at least twice
+        # [1.6.2] Secondary oncall must: have done out-of-hours support at least 3 times
+        for person in people.keys():
+            if_then(prob, times_inhours[week, person], 2, rota[week, person, Role.PRIMARY.name],        d[week, person, Role.PRIMARY.name])
+            if_then(prob, times_shadow[week, person],  1, rota[week, person, Role.SECONDARY.name],      d[week, person, Role.SECONDARY.name])
+            if_then(prob, times_oncall[week, person],  2, rota[week, person, Role.PRIMARY_ONCALL.name], d[week, person, Role.PRIMARY_ONCALL.name])
 
     # A person must:
     for person, p in people.items():
         # Constrain 'assigned' auxilliary variable.
         for week in range(num_weeks):
             prob += assigned[person] >= pulp.lpSum(rota[week, person, role.name] for role in Role)
+
+        # [1.4.2] Not shadow more than twice
+        prob += times_shadow[num_weeks - 1, person] <= 2
 
         # [2.1] Not be assigned more than one role in the same week
         for week in range(num_weeks):
