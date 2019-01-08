@@ -104,6 +104,12 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
             if_then(prob, times_shadow[week, person],  1, rota[week, person, Role.SECONDARY.name],      d[week, person, Role.SECONDARY.name])
             if_then(prob, times_oncall[week, person],  2, rota[week, person, Role.PRIMARY_ONCALL.name], d[week, person, Role.PRIMARY_ONCALL.name])
 
+        # [1.2.3] Ensure the primary is at least as experienced as the secondary
+        prob += pulp.lpSum(rota[week, person, Role.PRIMARY.name] * p.num_times_inhours for person, p in people.items()) >= pulp.lpSum(rota[week, person, Role.SECONDARY.name] * p.num_times_inhours for person, p in people.items())
+
+        # [1.6.3] Ensure the secondary oncall is at least as experienced as the primary oncall
+        prob += pulp.lpSum(rota[week, person, Role.SECONDARY_ONCALL.name] * p.num_times_oncall for person, p in people.items()) >= pulp.lpSum(rota[week, person, Role.PRIMARY_ONCALL.name] * p.num_times_oncall for person, p in people.items())
+
     # A person must:
     for person, p in people.items():
         # Constrain 'assigned' auxilliary variable.

@@ -18,6 +18,7 @@ Subject to these constraints:
    2. **Primary** must:
       1. be able to do in-hours support
       2. have been on in-hours support at least 3 times (including earlier instances in this rota)
+      3. be at least as experienced as **secondary**
    3. **Secondary** must:
       1. be able to do in-hours support
       2. have shadowed at least twice (including earlier instances in this rota)
@@ -29,6 +30,7 @@ Subject to these constraints:
    6. **Secondary oncall** must:
       1. be able to do out-of-hours support
       2. have done out-of-hours support at least 3 times (including earlier instances in this rota)
+      3. be at least as experienced as **primary**
 2. A person must:
    1. not be assigned more than one role in the same week
    2. not be assigned roles in two adjacent weeks
