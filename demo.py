@@ -1,4 +1,3 @@
-import pulp
 import random
 
 import rota
@@ -94,5 +93,5 @@ for week in range(num_weeks):
     print(f"\n== Week {week+1}:")
     for role in rota.Role:
         for person, p in people.items():
-            if pulp.value(var[week, person, role.name]) == 1:
+            if rota.is_assigned(var, week, person, role):
                 print(f"{role.name}: {person} {p}")
