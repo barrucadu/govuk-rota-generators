@@ -169,7 +169,7 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
 
     prob += obj * 1000000 + randomise
 
-    prob.solve(pulp.solvers.GLPK())
+    prob.solve(pulp.solvers.GLPK_CMD(options=['--tmlim', '30']))
     return rota
 
 
