@@ -70,7 +70,7 @@ def parse_csv_row(rn, row):
         errors.append(f"Row {rn}: 'num_times_oncall' field should be an integer")
 
     try:
-        forbidden_weeks = [int(n) for n in forbidden_weeks_str.split(',') if n != '']
+        forbidden_weeks = [int(n) - 1 for n in forbidden_weeks_str.split(',') if n != '']
     except ValueError:
         errors.append(f"Row {rn}: 'forbidden_weeks' field should be a comma-separated list of weeks")
 
