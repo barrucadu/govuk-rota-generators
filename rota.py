@@ -160,3 +160,10 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
 
     prob.solve(pulp.solvers.GLPK())
     return rota
+
+
+def is_assigned(var, week, person, role):
+    """Check if someone is assigned for a given role in a given week.
+    """
+
+    return pulp.value(var[week, person, role.name]) == 1

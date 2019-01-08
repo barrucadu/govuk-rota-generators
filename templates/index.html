@@ -1,0 +1,29 @@
+<html>
+  <body>
+    <form action="/rota" method="post" enctype="multipart/form-data">
+      <fieldset>
+        <ol>
+          <li>
+            <label for="num_weeks">Number of weeks:</label>
+            <input type="number" id="num_weeks" name="num_weeks">
+          </li>
+          <li>
+            <label for="max_inhours_shifts_per_person">Maximum in-hours shifts per person:</label>
+            <input type="number" id="max_inhours_shifts_per_person" name="max_inhours_shifts_per_person">
+          </li>
+          <li>
+            <label for="max_oncall_shifts_per_person">Maximum on-call shifts per person:</label>
+            <input type="number" id="max_oncall_shifts_per_person" name="max_oncall_shifts_per_person">
+          </li>
+          <li>
+            <label for="people">People:</label>
+            <input type="file" id="people" name="people">
+          </li>
+          <li>
+            <input type="submit" value="Generate a rota">
+          </li>
+        </ol>
+      </fieldset>
+    </form>
+  </body>
+</html>

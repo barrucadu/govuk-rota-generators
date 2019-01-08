@@ -1,0 +1,27 @@
+<html>
+  <body>
+    <h1>Whoops</h1>
+
+{% if (message is defined) and message %}
+    <p>{{ message }}</p>
+{% endif %}
+
+{% if (form_errors is defined) and form_errors %}
+    <h2>Encountered errors parsing the form</h2>
+    <ul>
+  {% for error in form_errors %}
+      <li>{{ error }}</li>
+  {% endfor %}
+    </ul>
+{% endif %}
+
+{% if (csv_errors is defined) and csv_errors %}
+    <h2>Encountered errors parsing the CSV</h2>
+    <ul>
+  {% for error in csv_errors %}
+      <li>{{ error }}</li>
+  {% endfor %}
+    </ul>
+{% endif %}
+  </body>
+</html>
