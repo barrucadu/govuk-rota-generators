@@ -184,4 +184,4 @@ def generate_rota():
         rota_csv_string = generate_rota_csv(num_weeks, people.keys(), rota_vars)
         return flask.Response(rota_csv_string, mimetype = 'text/plain')
     except RotaException as e:
-        return flask.render_template('error.html', message=str(e))
+        return flask.render_template('error.html', message=str(e)), 500
