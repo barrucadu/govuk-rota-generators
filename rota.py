@@ -1,6 +1,7 @@
 import collections
 import enum
 import pulp
+import random
 
 # A person who can appear in the rota.  People have no names, as
 # 'generate_model' is given a dict 'name -> person'.
@@ -156,7 +157,16 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     # [4] Maximise the number of weeks with a shadow
     obj += pulp.lpSum(rota[week, person, role.SHADOW.name] for week in range(num_weeks) for person in people.keys())
 
-    prob += obj
+    # Introduce a bit of randomisation by assigning each (week,person) pair a random score, and try to optimise the score
+    scores = {}
+    for week in range(num_weeks):
+        scores[week] = {}
+        for person in people.keys():
+            scores[week][person] = random.randint(0, 10)
+
+    randomise = pulp.lpSum(scores[week][person] * rota[week, person, role.name] for week in range(num_weeks) for person in people.keys() for role in Role)
+
+    prob += obj * 1000000 + randomise
 
     prob.solve(pulp.solvers.GLPK())
     return rota
