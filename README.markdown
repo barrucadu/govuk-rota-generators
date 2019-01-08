@@ -56,10 +56,10 @@ then ties are broken arbitrarily.
 
 ## Dependencies
 
-You need [GLPK][], the GNU Linear Programming Kit, installed and in
+You need [Cbc][] (**C**oin-or **b**ranch and **c**ut) installed and in
 your `$PATH`.
 
-[GLPK]: https://www.gnu.org/software/glpk/
+[Cbc]: https://projects.coin-or.org/Cbc
 
 ## Mathematical background
 
