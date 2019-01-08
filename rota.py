@@ -24,7 +24,7 @@ on_call_roles  = [Role.PRIMARY_ONCALL, Role.SECONDARY_ONCALL]
 
 
 def if_then(prob, var_a, k, var_b, var_d):
-    """Translate 'if var_a > k then var_b >= 0' into ILP constraints.
+    """Translate 'if var_a > k then var_b >= 0 else var_b = 0' into ILP constraints.
 
     'var_d' must be a fresh decision variable.
 
@@ -37,6 +37,7 @@ def if_then(prob, var_a, k, var_b, var_d):
     prob += var_a - k + m * var_d >= 1
     prob += var_b + m * var_d >= 0
     prob += var_a - k <= 0 + m * (1 - var_d)
+    prob += var_b <= m * (1 - var_d)
 
 
 def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people):
