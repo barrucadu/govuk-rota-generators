@@ -105,102 +105,79 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     assignments_oncall     = {person: 0 for person in people.keys()}
     assignments_escalation = {person: 0 for person in people.keys()}
 
-    previous = []
+    previous = {}
 
     for week in range(num_weeks):
-        primary   = get_assignee(rota, week, people, Roles.PRIMARY)
-        secondary = get_assignee(rota, week, people, Roles.SECONDARY)
-        shadow    = get_assignee(rota, week, people, Roles.SHADOW)
-        primary_oncall   = get_assignee(rota, week, people, Roles.PRIMARY_ONCALL)
-        secondary_oncall = get_assignee(rota, week, people, Roles.SECONDARY_ONCALL)
-        escalation = get_assignee(rota, week, people, Roles.ESCALATION)
+        assignments = {role: get_assignee(rota, week, people, role) for role in Roles}
 
-        # 1.1 - just assume that this means there is no rota which meets the constraints
-        if None in [primary, secondary, primary_oncall, secondary_oncall, escalation]:
-            raise NoSatisfyingRotaError()
-        # 1.2.1
-        if not people[primary].can_do_inhours:
-            raise SolverError(dump, week, "primary cannot do in-hours support")
+        for role in Roles:
+            # 1.1 - just assume that this means there is no rota which meets the constraints
+            if role.value.mandatory and assignments[role] is None:
+                raise NoSatisfyingRotaError()
+            # 1.2.1, 1.3.1, 1.4.1
+            if role.value.inhours and assignments[role] is not None and not people[assignments[role]].can_do_inhours:
+                raise SolverError(dump, week, f"{role.name.lower()} cannot do in-hours support")
+            # 1.5.1, 1.6.1
+            if role.value.oncall and assignments[role] is not None and not people[assignments[role]].can_do_oncall:
+                raise SolverError(dump, week, f"{role.name.lower()} cannot do on-call support")
+            # 1.7
+            if role.value.escalation and assignments[role] is not None and not people[assignments[role]].can_do_escalations:
+                raise SolverError(dump, week, f"{role.name.lower()} cannot do escalation support")
+
         # 1.2.2
-        if not times_inhours[primary] >= 3:
+        if not times_inhours[assignments[Roles.PRIMARY]] >= 3:
             raise SolverError(dump, week, "primary is not experienced enough")
         # 1.2.3
-        if not people[primary].num_times_inhours >= people[secondary].num_times_inhours:
+        if not people[assignments[Roles.PRIMARY]].num_times_inhours >= people[assignments[Roles.SECONDARY]].num_times_inhours:
             raise SolverError(dump, week, "primary is less experienced than secondary")
-        # 1.3.1
-        if not people[secondary].can_do_inhours:
-            raise SolverError(dump, week, "secondary cannot do in-hours support")
         # 1.3.2
-        if not times_shadow[secondary] >= 2:
+        if not times_shadow[assignments[Roles.SECONDARY]] >= 2:
             raise SolverError(dump, week, "secondary is not experienced enough")
-        if shadow is not None:
-            # 1.4.1
-            if not people[shadow].can_do_inhours:
-                raise SolverError(dump, week, "shadow cannot do in-hours support")
+        if assignments[Roles.SHADOW] is not None:
             # 1.4.2
-            if not times_shadow[shadow] <= 2:
+            if not times_shadow[assignments[Roles.SHADOW]] <= 2:
                 raise SolverError(dump, week, "shadow has shadowed too many times")
-        # 1.5.1
-        if not people[primary_oncall].can_do_oncall:
-            raise SolverError(dump, week, "primary oncall cannot do out-of-hours support")
-        # 1.6.1
-        if not people[secondary_oncall].can_do_oncall:
-            raise SolverError(dump, week, "secondary oncall cannot do out-of-hours support")
         # 1.6.2
-        if not times_oncall[secondary_oncall] >= 3:
+        if not times_oncall[assignments[Roles.SECONDARY_ONCALL]] >= 3:
             raise SolverError(dump, week, "secondary oncall is not experienced enough")
         # 1.6.3
-        if not people[secondary_oncall].num_times_oncall >= people[primary_oncall].num_times_oncall:
+        if not people[assignments[Roles.SECONDARY_ONCALL]].num_times_oncall >= people[assignments[Roles.PRIMARY_ONCALL]].num_times_oncall:
             raise SolverError(dump, week, "secondary oncall is less experienced than primary oncall")
-        # 1.7
-        if not people[escalation].can_do_escalations:
-            raise SolverError(dump, week, "escalations cannot be on escalations")
 
-        # 2.1
-        if primary in [secondary, shadow, primary_oncall, secondary_oncall]:
-            raise SolverError(dump, week, f"{primary} has multiple assignments")
-        if secondary in [primary, shadow, primary_oncall, secondary_oncall]:
-            raise SolverError(dump, week, f"{secondary} has multiple assignments")
-        if shadow in [primary, secondary, primary_oncall, secondary_oncall]:
-            raise SolverError(dump, week, f"{shadow} has multiple assignments")
-        if primary_oncall in [primary, secondary, shadow, secondary_oncall]:
-            raise SolverError(dump, week, f"{primary_oncall} has multiple assignments")
-        if secondary_oncall in [primary, secondary, shadow, primary_oncall]:
-            raise SolverError(dump, week, f"{secondary_oncall} has multiple assignments")
+        for r0, p0 in assignments.items():
+            for r1, p1 in assignments.items():
+                if r1.value.n <= r0.value.n or p0 is None or p1 is None:
+                    continue
+                # 2.1
+                if p0 == p1:
+                    raise SolverError(dump, week, f"{p0} has multiple assignments")
+                # 2.7
+                if r0.value.inhours and r1.value.inhours and people[p0].team == people[p1].team:
+                    raise SolverError(dump, week, f"{p0} and {p1} are on the same team")
 
         # 2.2
-        if primary in previous:
-            raise SolverError(dump, week, f"{primary} has assignment in previous week")
-        if secondary in previous:
-            raise SolverError(dump, week, f"{secondary} has assignment in previous week")
-        if shadow is not None and shadow in previous:
-            raise SolverError(dump, week, f"{shadow} has assignment in previous week")
-        if primary_oncall in previous:
-            raise SolverError(dump, week, f"{primary_oncall} has assignment in previous week")
-        if secondary_oncall in previous:
-            raise SolverError(dump, week, f"{secondary_oncal} has assignment in previous week")
+        for person in assignments.values():
+            if person is not None and person in previous.values():
+                raise SolverError(dump, week, f"{person} has assignment in previous week")
 
-        times_inhours[primary]         = times_inhours[primary] + 1
-        times_inhours[secondary]       = times_inhours[secondary] + 1
-        times_oncall[primary_oncall]   = times_oncall[primary_oncall] + 1
-        times_oncall[secondary_oncall] = times_oncall[secondary_oncall] + 1
+        for role, person in assignments.items():
+            if person is None:
+                continue
+            if role.value.inhours:
+                times_inhours[person]       = times_inhours[person] + 1
+                assignments_inhours[person] = assignments_inhours[person] + 1
+            if role.value.oncall:
+                times_oncall[person]       = times_oncall[person] + 1
+                assignments_oncall[person] = assignments_oncall[person] + 1
+            if role.value.escalation:
+                assignments_escalation[person] = assignments_escalation[person] + 1
 
-        assignments_inhours[primary]         = assignments_inhours[primary] + 1
-        assignments_inhours[secondary]       = assignments_inhours[secondary] + 1
-        assignments_oncall[primary_oncall]   = assignments_oncall[primary_oncall] + 1
-        assignments_oncall[secondary_oncall] = assignments_oncall[secondary_oncall] + 1
-        assignments_escalation[escalation]   = assignments_escalation[escalation] + 1
-
-        if shadow is not None:
-            times_shadow[shadow]        = times_shadow[shadow] + 1
-            assignments_inhours[shadow] = assignments_inhours[shadow] + 1
-
-        previous = [primary, secondary, shadow, primary_oncall, secondary_oncall]
+        previous = {role: person for person in assignments.items() if person is not None}
 
         for person, p in people.items():
             # 2.3
             if week in p.forbidden_weeks:
-                if person in [primary, secondary, shadow, primary_oncall, secondary_oncall]:
+                if person in assignments.values():
                     raise SolverError(dump, week, f"{person} has assignment in forbidden week")
             # 2.4
             if assignments_inhours[person] > max_inhours_shifts_per_person:
@@ -211,11 +188,6 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
             # 2.6
             if assignments_escalation[person] > max_escalation_shifts_per_person:
                 raise SolverError(dump, week, f"{person} has too many escalation assignments")
-
-        # 2.7
-        if len(set(people[person].team for person in [primary, secondary, shadow] if person is not None)) != (2 if shadow is None else 3):
-            raise SolverError(dump, week, "multiple in-hours people are on the same team")
-
 
 
 def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people):
