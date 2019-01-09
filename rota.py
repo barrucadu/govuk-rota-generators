@@ -83,7 +83,7 @@ def if_then(prob, var_a, k, var_b, var_d):
     """
 
     # a number bigger than the number of times someone can actually be on shift
-    m = 999999999
+    m = 999
 
     prob += var_a - k + m * var_d >= 1
     prob += var_b + m * var_d >= 0
@@ -317,7 +317,7 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     # [1] Minimise the maximum number of roles-assignments any one person has
     # or: Maximise the number of people with assignments
     # This is more important than the other optimisations (which are about reducing weeks which are bad in a fairly minor way) so give it a *1000 factor
-    obj = pulp.lpSum(assigned[person] for person in people.keys()) * 1000
+    obj = pulp.lpSum(assigned[person] for person in people.keys()) * 100
 
     # [2] Maximise the number of weeks where secondary has been on in-hours support fewer than 3 times
     obj += pulp.lpSum(rota[week, person, Roles.SECONDARY.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_inhours < 3)
@@ -334,12 +334,12 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     for week in range(num_weeks):
         scores[week] = {}
         for person in people.keys():
-            scores[week][person] = random.randint(0, 10)
+            scores[week][person] = random.randint(0, 1)
 
     randomise = pulp.lpSum(scores[week][person] * rota[week, person, role.name] for week in range(num_weeks) for person in people.keys() for role in Roles)
 
-    prob += obj * 1000000 + randomise
+    prob += obj * 100 + randomise
 
-    prob.solve(pulp.solvers.GLPK_CMD(options=['--tmlim', '30']))
+    prob.solve(pulp.solvers.GLPK_CMD(options=['--mipgap', '0.001']))
     validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people, rota)
     return rota
