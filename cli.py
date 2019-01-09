@@ -59,17 +59,17 @@ def generate_rota(args):
             print(e)
         sys.exit(1)
 
-    rota_vars = rota.generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people)
-
     try:
-        rota_csv_string = printer.generate_rota_csv(num_weeks, people.keys(), rota_vars)
-        print(rota_csv_string)
+        rota_vars = rota.generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people)
+    except rota.NoSatisfyingRotaError:
+        print("There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person.")
+        sys.exit(2)
     except rota.SolverFailure as e:
         print(str(e))
-        sys.exit(2)
-    except printer.RotaException as e:
-        print(str(e))
-        sys.exit(2)
+        sys.exit(3)
+
+    rota_csv_string = printer.generate_rota_csv(num_weeks, people.keys(), rota_vars)
+    print(rota_csv_string)
 
 
 if __name__ == '__main__':

@@ -5,7 +5,11 @@ import random
 from tabulate import tabulate
 
 
-class SolverFailure(Exception):
+class NoSatisfyingRotaError(Exception):
+    pass
+
+
+class SolverError(Exception):
     def __init__(self, dump, week, problem):
         super().__init__(f"Week {week}: {problem}\n{dump}")
         self.dump = dump
@@ -41,7 +45,7 @@ def is_assigned(var, week, person, role):
 
 
 def get_assignee(var, week, people, role):
-    """Find who is assigned to the role, raise 'SolverFailure' if multiple
+    """Find who is assigned to the role, raise 'SolverError' if multiple
     people are.
     """
 
@@ -49,7 +53,7 @@ def get_assignee(var, week, people, role):
     for person in people.keys():
         if is_assigned(var, week, person, role):
             if out is not None:
-                raise SolverFailure(week, f"Multiple assignments to {role.name}")
+                raise SolverError(week, f"Multiple assignments to {role.name}")
             out = person
     return out
 
@@ -109,67 +113,67 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
         primary_oncall   = get_assignee(rota, week, people, Role.PRIMARY_ONCALL)
         secondary_oncall = get_assignee(rota, week, people, Role.SECONDARY_ONCALL)
 
-        # 1.1
+        # 1.1 - just assume that this means there is no rota which meets the constraints
         if None in [primary, secondary, primary_oncall, secondary_oncall]:
-            raise SolverFailure(dump, week, "missing required assignment")
+            raise NoSatisfyingRotaError()
         # 1.2.1
         if not people[primary].can_do_inhours:
-            raise SolverFailure(dump, week, "primary cannot do in-hours support")
+            raise SolverError(dump, week, "primary cannot do in-hours support")
         # 1.2.2
         if not times_inhours[primary] >= 3:
-            raise SolverFailure(dump, week, "primary is not experienced enough")
+            raise SolverError(dump, week, "primary is not experienced enough")
         # 1.2.3
         if not people[primary].num_times_inhours >= people[secondary].num_times_inhours:
-            raise SolverFailure(dump, week, "primary is less experienced than secondary")
+            raise SolverError(dump, week, "primary is less experienced than secondary")
         # 1.3.1
         if not people[secondary].can_do_inhours:
-            raise SolverFailure(dump, week, "secondary cannot do in-hours support")
+            raise SolverError(dump, week, "secondary cannot do in-hours support")
         # 1.3.2
         if not times_shadow[secondary] >= 2:
-            raise SolverFailure(dump, week, "secondary is not experienced enough")
+            raise SolverError(dump, week, "secondary is not experienced enough")
         if shadow is not None:
             # 1.4.1
             if not people[shadow].can_do_inhours:
-                raise SolverFailure(dump, week, "shadow cannot do in-hours support")
+                raise SolverError(dump, week, "shadow cannot do in-hours support")
             # 1.4.2
             if not times_shadow[shadow] <= 2:
-                raise SolverFailure(dump, week, "shadow has shadowed too many times")
+                raise SolverError(dump, week, "shadow has shadowed too many times")
         # 1.5.1
         if not people[primary_oncall].can_do_oncall:
-            raise SolverFailure(dump, week, "primary oncall cannot do out-of-hours support")
+            raise SolverError(dump, week, "primary oncall cannot do out-of-hours support")
         # 1.6.1
         if not people[secondary_oncall].can_do_oncall:
-            raise SolverFailure(dump, week, "secondary oncall cannot do out-of-hours support")
+            raise SolverError(dump, week, "secondary oncall cannot do out-of-hours support")
         # 1.6.2
         if not times_oncall[secondary_oncall] >= 3:
-            raise SolverFailure(dump, week, "secondary oncall is not experienced enough")
+            raise SolverError(dump, week, "secondary oncall is not experienced enough")
         # 1.6.3
         if not people[secondary_oncall].num_times_oncall >= people[primary_oncall].num_times_oncall:
-            raise SolverFailure(dump, week, "secondary oncall is less experienced than primary oncall")
+            raise SolverError(dump, week, "secondary oncall is less experienced than primary oncall")
 
         # 2.1
         if primary in [secondary, shadow, primary_oncall, secondary_oncall]:
-            raise SolverFailure(dump, week, f"{primary} has multiple assignments")
+            raise SolverError(dump, week, f"{primary} has multiple assignments")
         if secondary in [primary, shadow, primary_oncall, secondary_oncall]:
-            raise SolverFailure(dump, week, f"{secondary} has multiple assignments")
+            raise SolverError(dump, week, f"{secondary} has multiple assignments")
         if shadow in [primary, secondary, primary_oncall, secondary_oncall]:
-            raise SolverFailure(dump, week, f"{shadow} has multiple assignments")
+            raise SolverError(dump, week, f"{shadow} has multiple assignments")
         if primary_oncall in [primary, secondary, shadow, secondary_oncall]:
-            raise SolverFailure(dump, week, f"{primary_oncall} has multiple assignments")
+            raise SolverError(dump, week, f"{primary_oncall} has multiple assignments")
         if secondary_oncall in [primary, secondary, shadow, primary_oncall]:
-            raise SolverFailure(dump, week, f"{secondary_oncall} has multiple assignments")
+            raise SolverError(dump, week, f"{secondary_oncall} has multiple assignments")
 
         # 2.2
         if primary in previous:
-            raise SolverFailure(dump, week, f"{primary} has assignment in previous week")
+            raise SolverError(dump, week, f"{primary} has assignment in previous week")
         if secondary in previous:
-            raise SolverFailure(dump, week, f"{secondary} has assignment in previous week")
+            raise SolverError(dump, week, f"{secondary} has assignment in previous week")
         if shadow is not None and shadow in previous:
-            raise SolverFailure(dump, week, f"{shadow} has assignment in previous week")
+            raise SolverError(dump, week, f"{shadow} has assignment in previous week")
         if primary_oncall in previous:
-            raise SolverFailure(dump, week, f"{primary_oncall} has assignment in previous week")
+            raise SolverError(dump, week, f"{primary_oncall} has assignment in previous week")
         if secondary_oncall in previous:
-            raise SolverFailure(dump, week, f"{secondary_oncal} has assignment in previous week")
+            raise SolverError(dump, week, f"{secondary_oncal} has assignment in previous week")
 
         times_inhours[primary]         = times_inhours[primary] + 1
         times_inhours[secondary]       = times_inhours[secondary] + 1
@@ -191,17 +195,17 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
             # 2.3
             if week in p.forbidden_weeks:
                 if person in [primary, secondary, shadow, primary_oncall, secondary_oncall]:
-                    raise SolverFailure(dump, week, f"{person} has assignment in forbidden week")
+                    raise SolverError(dump, week, f"{person} has assignment in forbidden week")
             # 2.4
             if assignments_inhours[person] > max_inhours_shifts_per_person:
-                raise SolverFailure(dump, week, f"{person} has too many in-hours assignments")
+                raise SolverError(dump, week, f"{person} has too many in-hours assignments")
             # 2.5
             if assignments_oncall[person] > max_oncall_shifts_per_person:
-                raise SolverFailure(dump, week, f"{person} has too many in-hours assignments")
+                raise SolverError(dump, week, f"{person} has too many in-hours assignments")
 
         # 2.6
         if len(set(people[person].team for person in [primary, secondary, shadow] if person is not None)) != (2 if shadow is None else 3):
-            raise SolverFailure(dump, week, "multiple in-hours people are on the same team")
+            raise SolverError(dump, week, "multiple in-hours people are on the same team")
 
 
 
