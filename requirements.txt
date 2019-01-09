@@ -1,4 +1,11 @@
-docopt
-flask
-pulp
-tabulate
+Click==7.0
+docopt==0.6.2
+Flask==1.0.2
+gunicorn==19.9.0
+itsdangerous==1.1.0
+Jinja2==2.10
+MarkupSafe==1.1.0
+PuLP==1.6.9
+pyparsing==2.3.0
+tabulate==0.8.2
+Werkzeug==0.14.1
