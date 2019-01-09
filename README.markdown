@@ -76,10 +76,10 @@ docs][].
 
 ## Demo
 
-There is a sample data file, `demo.csv`:
+There is a sample data file, `static/demo.csv`:
 
 ```
-> ./cli.py demo.csv
+> ./cli.py static/demo.csv
 week,primary,secondary,shadow,primary_oncall,secondary_oncall
 1,Hector Beckett,Danielle Bence,Brant Paskett,Eleni Brandy,Galen Takemoto
 2,Werner Rosenblatt,Randell Gingras,,Don Mong,David Reifsteck

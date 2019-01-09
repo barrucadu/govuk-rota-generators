@@ -28,4 +28,28 @@
     </fieldset>
   </form>
 </section>
+
+<section class="box">
+  <p>The 'people' csv has these headings:</p>
+  <dl>
+    <dt>name</dt>
+    <dd>The person's name.  Two people cannot have the same name.</dd>
+    <dt>team</dt>
+    <dd>What team the person is on.  Two people on the same team can't be on in-hours support at the same time.</dd>
+    <dt>can_do_inhours</dt>
+    <dd>Whether they can do in-hours support or not.  Should be one of &quot;true&quot;, &quot;false&quot;, &quot;yes&quot;, &quot;no&quot;, &quot;y&quot;, &quot;n&quot;, &quot;1&quot;, or &quot;0&quot;.  Cae insensitive.</dd>
+    <dt>num_times_inhours</dt>
+    <dd>The number of times they have done in-hours support.  Someone can only be primary in-hours if they have had at least 3 shifts (including earlier ones in the generated rota.</dd>
+    <dt>num_times_shadow</dt>
+    <dd>The number of times they have shadowed in-hours support.  Someone can only be econdary in-hours if they have had at least 2 shadow shifts (including earlier ones in the generated rota.</dd>
+    <dt>can_do_oncall</dt>
+    <dd>Whether they can do out-of-hours support or not.  Takes the same values as can_do_inhours.</dd>
+    <dt>num_times_oncall</dt>
+    <dd>The number of times they have done out-of-hours support.  Someone can only be secondary on-call if they have had at least 3 shifts (including earlier ones in the generated rota.</dd>
+    <dt>forbidden_weeks</dt>
+    <dd>Weeks that this person cannot do, counting from 1.</dd>
+  </dl>
+  <p>There is <a href="{{ url_for('static', filename='demo.csv') }}">an example file</a>.  If you're generating the actual GOV.UK rota, there is a spreadsheet in Google Docs.</p>
+  <p>A full list of constraints is <a href="https://github.com/barrucadu/govuk-2ndline-rota-generator">available on GitHub</a>.</p>
+</section>
 {% endblock %}

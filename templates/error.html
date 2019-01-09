@@ -1,8 +1,6 @@
 {% extends "layout.html" %}
 {% block title %}Whoops{% endblock %}
 {% block content %}
-<h1 class="box">Whoops</h1>
-
 {% if (message is defined) and message %}
 <section class="box">
   <h2>{% if (summary is defined) and summary %}{{ summary }}{% else %}Encountered a problem{% endif %}</h2>
