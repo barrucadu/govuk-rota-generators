@@ -40,6 +40,13 @@ def generate_rota():
         form_errors.append("Field 'max_oncall_shifts_per_person' is expected to be a number")
 
     try:
+        max_escalation_shifts_per_person = int(flask.request.form['max_escalation_shifts_per_person'])
+    except KeyError:
+        form_errors.append("Field 'max_escalation_shifts_per_person' is expected to exist")
+    except ValueError:
+        form_errors.append("Field 'max_escalation_shifts_per_person' is expected to be a number")
+
+    try:
         csv_bytes = flask.request.files['people']
         people = parser.people_from_csv(io.StringIO(csv_bytes.stream.read().decode("UTF8"), newline=None))
     except KeyError:
@@ -51,7 +58,7 @@ def generate_rota():
         return flask.render_template('error.html', form_errors=form_errors, csv_errors=csv_errors)
 
     try:
-        rota_vars = rota.generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people)
+        rota_vars = rota.generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people)
     except rota.NoSatisfyingRotaError:
         return flask.render_template('error.html', message="There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person."), 500
     except rota.SolverError as e:

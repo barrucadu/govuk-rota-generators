@@ -4,14 +4,15 @@
 GOV.UK 2ndline Rota Generator
 
 Usage:
-  cli.py [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>] <file>
+  cli.py [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>] [--max-escalation-shifts=<n>] <file>
   cli.py (-h | --help)
 
 Options:
-  -h --help                  Show this screen.
-  --num-weeks=<n>            Number of weeks to generate [default: 12].
-  --max-in-hours-shifts=<n>  Maximum number of in-hours shifts someone can have [default: 1].
-  --max-on-call-shifts=<n>   Maximum number of on-call shifts someone can have [default: 3].
+  -h --help                    Show this screen.
+  --num-weeks=<n>              Number of weeks to generate [default: 12].
+  --max-in-hours-shifts=<n>    Maximum number of in-hours shifts someone can have [default: 1].
+  --max-on-call-shifts=<n>     Maximum number of on-call shifts someone can have [default: 3].
+  --max-escalation-shifts=<n>  Maximum number of escalation shifts someone can have [default: 3].
 """
 
 from docopt import docopt
@@ -47,6 +48,13 @@ def generate_rota(args):
         errors.append("--max-on-call-shifts must be a number")
 
     try:
+        max_escalation_shifts_per_person = int(args['--max-escalation-shifts'])
+    except KeyError:
+        errors.append("--max-escalation-shifts is required")
+    except ValueError:
+        errors.append("--max-escalation-shifts must be a number")
+
+    try:
         with open(args['<file>'], 'r') as f:
             people = parser.people_from_csv(f)
     except KeyError:
@@ -60,7 +68,7 @@ def generate_rota(args):
         sys.exit(1)
 
     try:
-        rota_vars = rota.generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people)
+        rota_vars = rota.generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people)
     except rota.NoSatisfyingRotaError:
         print("There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person.")
         sys.exit(2)

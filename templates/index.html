@@ -18,6 +18,10 @@
           <input type="number" id="max_oncall_shifts_per_person" name="max_oncall_shifts_per_person" value="3" min="1">
         </li>
         <li>
+          <label for="max_escalation_shifts_per_person">Maximum escalation shifts per person:</label>
+          <input type="number" id="max_escalation_shifts_per_person" name="max_escalation_shifts_per_person" value="3" min="1">
+        </li>
+        <li>
           <label for="people">People:</label>
           <input type="file" id="people" name="people">
         </li>
@@ -46,6 +50,8 @@
     <dd>Whether they can do out-of-hours support or not.  Takes the same values as can_do_inhours.</dd>
     <dt>num_times_oncall</dt>
     <dd>The number of times they have done out-of-hours support.  Someone can only be secondary on-call if they have had at least 3 shifts (including earlier ones in the generated rota).</dd>
+    <dt>can_do_escalations</dt>
+    <dd>Whether they can be on escalations or not.  Takes the same values as can_do_inhours.</dd>
     <dt>forbidden_weeks</dt>
     <dd>Weeks that this person cannot do, counting from 1.</dd>
   </dl>

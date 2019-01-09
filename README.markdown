@@ -4,17 +4,18 @@ govuk-2ndline-rota-generator
 It does what it says on the tin.
 
 More specifically, generates a support rota for `n` weeks.  The rota
-for one week consists of four or five people, assigned to the
-following roles:
+for one week consists of five or six people, assigned to the following
+roles:
 
 - **Primary** and **secondary**, in-hours support
 - **Shadow** *(optional)*, someone who learns the ropes in-hours
 - **Primary oncall** and **secondary oncall**, the out-of-hours support
+- **Escalation**, someone from the programme team
 
 Subject to these constraints:
 
 1. In every week:
-   1. Each role must be assigned to exactly one person, except **shadow** which may be unassigned.
+   1. Each role must be assigned to exactly one person, except **shadow** and **escalation** which may be unassigned.
    2. **Primary** must:
       1. be able to do in-hours support
       2. have been on in-hours support at least 3 times (including earlier instances in this rota)
@@ -31,13 +32,15 @@ Subject to these constraints:
       1. be able to do out-of-hours support
       2. have done out-of-hours support at least 3 times (including earlier instances in this rota)
       3. be at least as experienced as **primary**
+  7. **Escalation** must be able to do escalations
 2. A person must:
    1. not be assigned more than one role in the same week
    2. not be assigned roles in two adjacent weeks
    3. not be assigned a role in a week they cannot do
    4. not be assigned more than `Ri` in-hours roles in total
    5. not be assigned more than `Ro` out-of-hours roles in total
-   6. not be on in-hours support in the same week that someone else from their team is also on in-hours support
+   6. not be assigned more than `Re` escalation roles in total
+   7. not be on in-hours support in the same week that someone else from their team is also on in-hours support
 
 There's an asymmetry: the **primary** is required to be more
 experienced than the **secondary**, but the opposite is the case for
@@ -80,17 +83,17 @@ There is a sample data file, `static/demo.csv`:
 
 ```
 > ./cli.py static/demo.csv
-week,primary,secondary,shadow,primary_oncall,secondary_oncall
-1,Hector Beckett,Danielle Bence,Brant Paskett,Eleni Brandy,Galen Takemoto
-2,Werner Rosenblatt,Randell Gingras,,Don Mong,David Reifsteck
-3,Lucile Spanbauer,Gussie Fridley,,Elvira Stefani,Danielle Bence
-4,Don Mong,Verda Streit,,Eleni Brandy,Eura Joseph
-5,Mauro Au,Galen Takemoto,,Delisa Polson,Hector Beckett
-6,Wilfredo Yoshida,Lynn Steinhauer,Buffy Nowacki,Elvira Stefani,Danielle Bence
-7,Raye Slone,David Reifsteck,Camille Whitmarsh,Eleni Brandy,Helen Jarrard
-8,Kristyn Wolverton,Nathanael Mejia,Arlette Mckeighan,Delisa Polson,Gussie Fridley
-9,Isaura Lafuente,Katerine Greenwood,,Don Mong,Galen Takemoto
-10,Santiago Mizer,Reynalda Botelho,Allyson Mirando,Delisa Polson,Danielle Bence
-11,Jessie Ahlquist,Helen Jarrard,Breana Mar,Don Mong,Galen Takemoto
-12,Leticia Grable,Theodore Hagberg,Sergio Mcdevitt,Elvira Stefani,David Reifsteck
+week,primary,secondary,shadow,primary_oncall,secondary_oncall,escalation
+1,Santiago Mizer,Eleni Brandy,Camille Whitmarsh,Elvira Stefani,Galen Takemoto,Natalia Fordham
+2,Isaura Lafuente,Randell Gingras,Brant Paskett,Don Mong,Danielle Bence,Oren Bouska
+3,Eura Joseph,Hector Beckett,,Delisa Polson,David Reifsteck,Natalia Fordham
+4,Jessie Ahlquist,Lucile Spanbauer,,Eleni Brandy,Helen Jarrard,Carolyne Pflug
+5,Theodore Hagberg,Gussie Fridley,,Delisa Polson,Galen Takemoto,Clinton Istre
+6,Wilfredo Yoshida,Kristyn Wolverton,Allyson Mirando,Elvira Stefani,Eura Joseph,Oren Bouska
+7,Werner Rosenblatt,Lynn Steinhauer,Arlette Mckeighan,Eleni Brandy,Hector Beckett,Carolyne Pflug
+8,Raye Slone,Katerine Greenwood,,Elvira Stefani,Eura Joseph,Natalia Fordham
+9,Mauro Au,Reynalda Botelho,Buffy Nowacki,Eleni Brandy,Galen Takemoto,Oren Bouska
+10,Helen Jarrard,Sergio Mcdevitt,Breana Mar,Don Mong,Hector Beckett,Clarita Caiazzo
+11,Leticia Grable,Elvira Stefani,,Delisa Polson,Gussie Fridley,Clinton Istre
+12,Kristen Youngren,Verda Streit,Galen Takemoto,Don Mong,Hector Beckett,Carolyne Pflug
 ```
