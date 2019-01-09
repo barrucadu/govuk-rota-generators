@@ -5,8 +5,14 @@
 
 {% if (message is defined) and message %}
 <section class="box">
-  <h2>Encountered a problem</h2>
+  <h2>{% if (summary is defined) and summary %}{{ summary }}{% else %}Encountered a problem{% endif %}</h2>
   <p>{{ message }}</p>
+
+  {% if (debug is defined) and debug %}
+  <pre>
+{{ debug }}
+  </pre>
+  {% endif %}
 </section>
 {% endif %}
 

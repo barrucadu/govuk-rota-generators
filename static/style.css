@@ -47,3 +47,8 @@ fieldset li {
 label {
     display: block;
 }
+
+pre {
+    font-size: 0.8rem;
+    overflow: scroll;
+}

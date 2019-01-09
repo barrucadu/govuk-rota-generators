@@ -64,6 +64,9 @@ def generate_rota(args):
     try:
         rota_csv_string = printer.generate_rota_csv(num_weeks, people.keys(), rota_vars)
         print(rota_csv_string)
+    except rota.SolverFailure as e:
+        print(str(e))
+        sys.exit(2)
     except printer.RotaException as e:
         print(str(e))
         sys.exit(2)

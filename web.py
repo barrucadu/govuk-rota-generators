@@ -50,7 +50,10 @@ def generate_rota():
     if form_errors or csv_errors:
         return flask.render_template('error.html', form_errors=form_errors, csv_errors=csv_errors)
 
-    rota_vars = rota.generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people)
+    try:
+        rota_vars = rota.generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people)
+    except rota.SolverFailure as e:
+        return flask.render_template('error.html', summary="Encountered an internal solver error", message=f"The first invalid week is week {e.week}: {e.problem}.", debug=e.dump), 500
 
     try:
         rota_csv_string = printer.generate_rota_csv(num_weeks, people.keys(), rota_vars)
