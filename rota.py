@@ -21,22 +21,20 @@ class SolverError(Exception):
 # 'generate_model' is given a dict 'name -> person'.
 Person = collections.namedtuple('Person', ['team', 'can_do_inhours', 'num_times_inhours', 'num_times_shadow', 'can_do_oncall', 'num_times_oncall', 'can_do_escalations', 'forbidden_weeks'])
 
+# A role
+Role = collections.namedtuple('Role', ['n', 'inhours', 'oncall', 'escalation'])
+
 
 class Roles(enum.Enum):
     """All the different types of role.
     """
 
-    PRIMARY          = enum.auto()
-    SECONDARY        = enum.auto()
-    SHADOW           = enum.auto()
-    PRIMARY_ONCALL   = enum.auto()
-    SECONDARY_ONCALL = enum.auto()
-    ESCALATION       = enum.auto()
-
-
-in_hours_roles   = [Roles.PRIMARY, Roles.SECONDARY, Roles.SHADOW]
-on_call_roles    = [Roles.PRIMARY_ONCALL, Roles.SECONDARY_ONCALL]
-escalation_roles = [Roles.ESCALATION]
+    PRIMARY          = Role(0, True, False, False)
+    SECONDARY        = Role(1, True, False, False)
+    SHADOW           = Role(2, True, False, False)
+    PRIMARY_ONCALL   = Role(3, False, True, False)
+    SECONDARY_ONCALL = Role(4, False, True, False)
+    ESCALATION       = Role(5, False, False, True)
 
 
 def is_assigned(var, week, person, role):
@@ -272,12 +270,13 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
         # [1.6.1] Secondary oncall must: be able to do out-of-hours support
         # [1.7]   Escalation must: be able to do escalatons
         for person, p in people.items():
-            prob += rota[week, person, Roles.PRIMARY.name]          <= (1 if p.can_do_inhours     else 0)
-            prob += rota[week, person, Roles.SECONDARY.name]        <= (1 if p.can_do_inhours     else 0)
-            prob += rota[week, person, Roles.SHADOW.name]           <= (1 if p.can_do_inhours     else 0)
-            prob += rota[week, person, Roles.PRIMARY_ONCALL.name]   <= (1 if p.can_do_oncall      else 0)
-            prob += rota[week, person, Roles.SECONDARY_ONCALL.name] <= (1 if p.can_do_oncall      else 0)
-            prob += rota[week, person, Roles.ESCALATION.name]       <= (1 if p.can_do_escalations else 0)
+            for role in Roles:
+                if role.value.inhours:
+                    prob += rota[week, person, role.name] <= (1 if p.can_do_inhours     else 0)
+                if role.value.oncall:
+                    prob += rota[week, person, role.name] <= (1 if p.can_do_oncall      else 0)
+                if role.value.escalation:
+                    prob += rota[week, person, role.name] <= (1 if p.can_do_escalations else 0)
 
         # [1.2.2] Primary must: have been on in-hours support at least 3 times
         # [1.3.2] Secondary must: have shadowed at least twice
@@ -317,13 +316,13 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
             prob += pulp.lpSum(rota[forbidden_week, person, role.name] for role in Roles) == 0
 
         # [2.4] Not be assigned more than `max_inhours_shifts_per_person` in-hours roles in total
-        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in in_hours_roles) <= max_inhours_shifts_per_person
+        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Roles if role.value.inhours) <= max_inhours_shifts_per_person
 
         # [2.5] Not be assigned more than `max_oncall_shifts_per_person` out-of-hours roles in total
-        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in on_call_roles) <= max_oncall_shifts_per_person
+        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Roles if role.value.oncall) <= max_oncall_shifts_per_person
 
         # [2.6] Not be assigned more than `max_escalation_shifts_per_person` escalation roles in total
-        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in escalation_roles) <= max_escalation_shifts_per_person
+        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Roles if role.value.escalation) <= max_escalation_shifts_per_person
 
         # [2.7] Not be on in-hours support in the same week that someone else from their team is also on in-hours support
         for week in range(num_weeks):
@@ -332,7 +331,7 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
                     continue
                 if p.team != p2.team:
                     continue
-                prob += pulp.lpSum(rota[week, person, role.name] for role in in_hours_roles) + pulp.lpSum(rota[week, person2, role.name] for role in in_hours_roles) <= 1
+                prob += pulp.lpSum(rota[week, person, role.name] for role in Roles if role.value.inhours) + pulp.lpSum(rota[week, person2, role.name] for role in Roles if role.value.inhours) <= 1
 
     ### Optimisations
 
