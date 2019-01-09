@@ -76,7 +76,7 @@ def generate_rota(args):
         print(str(e))
         sys.exit(3)
 
-    rota_csv_string = printer.generate_rota_csv(num_weeks, people.keys(), rota_vars)
+    rota_csv_string = printer.generate_rota_csv(num_weeks, people, rota_vars)
     print(rota_csv_string)
 
 

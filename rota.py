@@ -92,7 +92,11 @@ def if_then(prob, var_a, k, var_b, var_d):
 
 
 def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people, rota):
-    """Validate the rota meets the constraints - as Cbc returned an invalid one.
+    """Validate the rota meets the constraints - as Cbc returned an
+    invalid one.
+
+    Doesn't check constraints [1.2.3] or [1.6.3], see 'generate_model'
+    for reasoning.
     """
 
     dump = dump_ilp(num_weeks, people.keys(), rota)
@@ -127,9 +131,6 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
         # 1.2.2
         if not times_inhours[assignments[Roles.PRIMARY]] >= 3:
             raise SolverError(dump, week, "primary is not experienced enough")
-        # 1.2.3
-        if not people[assignments[Roles.PRIMARY]].num_times_inhours >= people[assignments[Roles.SECONDARY]].num_times_inhours:
-            raise SolverError(dump, week, "primary is less experienced than secondary")
         # 1.3.2
         if not times_shadow[assignments[Roles.SECONDARY]] >= 2:
             raise SolverError(dump, week, "secondary is not experienced enough")
@@ -140,9 +141,6 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
         # 1.6.2
         if not times_oncall[assignments[Roles.SECONDARY_ONCALL]] >= 3:
             raise SolverError(dump, week, "secondary oncall is not experienced enough")
-        # 1.6.3
-        if not people[assignments[Roles.SECONDARY_ONCALL]].num_times_oncall >= people[assignments[Roles.PRIMARY_ONCALL]].num_times_oncall:
-            raise SolverError(dump, week, "secondary oncall is less experienced than primary oncall")
 
         for r0, p0 in assignments.items():
             for r1, p1 in assignments.items():
@@ -192,6 +190,14 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
 
 def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people):
     """Generate the mathematical model of the rota problem.
+
+    Constraints [1.2.3] (primary exp >= secondary exp) and [1.6.3]
+    (oncall secondary exp >= oncall primary exp) are not enforced
+    here, as they greatly slow down the solver (several seconds ->
+    several minutes and counting), and the other constraints are
+    sufficient to ensure qualified people are put in these roles.
+    Instead, the 'printer.generate_rota_csv' function swaps the people
+    if need be.
     """
 
     prob = pulp.LpProblem(name='2ndline rota', sense=pulp.LpMaximize)
@@ -255,12 +261,6 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
             if_then(prob, times_inhours[week, person], 2, rota[week, person, Roles.PRIMARY.name],        d[week, person, Roles.PRIMARY.name])
             if_then(prob, times_shadow[week, person],  1, rota[week, person, Roles.SECONDARY.name],      d[week, person, Roles.SECONDARY.name])
             if_then(prob, times_oncall[week, person],  2, rota[week, person, Roles.SECONDARY_ONCALL.name], d[week, person, Roles.SECONDARY_ONCALL.name])
-
-        # [1.2.3] Ensure the primary is at least as experienced as the secondary
-        prob += pulp.lpSum(rota[week, person, Roles.PRIMARY.name] * p.num_times_inhours for person, p in people.items()) >= pulp.lpSum(rota[week, person, Roles.SECONDARY.name] * p.num_times_inhours for person, p in people.items())
-
-        # [1.6.3] Ensure the secondary oncall is at least as experienced as the primary oncall
-        prob += pulp.lpSum(rota[week, person, Roles.SECONDARY_ONCALL.name] * p.num_times_oncall for person, p in people.items()) >= pulp.lpSum(rota[week, person, Roles.PRIMARY_ONCALL.name] * p.num_times_oncall for person, p in people.items())
 
     # A person must:
     for person, p in people.items():

@@ -64,5 +64,5 @@ def generate_rota():
     except rota.SolverError as e:
         return flask.render_template('error.html', summary="Encountered an internal solver error", message=f"The first invalid week is week {e.week}: {e.problem}.", debug=e.dump), 500
 
-    rota_csv_string = printer.generate_rota_csv(num_weeks, people.keys(), rota_vars)
+    rota_csv_string = printer.generate_rota_csv(num_weeks, people, rota_vars)
     return flask.Response(rota_csv_string, mimetype = 'text/plain')
