@@ -16,7 +16,7 @@ def generate_rota_csv(num_weeks, persons, var):
 
     for week in range(num_weeks):
         r = {'week': week + 1}
-        for role in rota.Role:
+        for role in rota.Roles:
             for person in persons:
                 if rota.is_assigned(var, week, person, role):
                     r[role.name.lower()] = person
