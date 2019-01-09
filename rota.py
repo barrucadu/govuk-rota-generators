@@ -194,7 +194,7 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
                 raise SolverError(dump, week, f"{person} has too many escalation assignments")
 
 
-def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people):
+def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people, use_glpk = False):
     """Generate the mathematical model of the rota problem.
 
     Constraints [1.2.3] (primary exp >= secondary exp) and [1.6.3]
@@ -340,6 +340,11 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
 
     prob += obj * 100 + randomise
 
-    prob.solve(pulp.solvers.GLPK_CMD(options=['--mipgap', '0.001']))
+    if use_glpk:
+        prob.solve(pulp.solvers.GLPK_CMD(options=['--mipgap', '0.001']))
+    else:
+        prob.solve(pulp.solvers.COIN_CMD())
+
     validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people, rota)
+
     return rota
