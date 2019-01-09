@@ -41,6 +41,7 @@ Subject to these constraints:
    5. not be assigned more than `Ro` out-of-hours roles in total
    6. not be assigned more than `Re` escalation roles in total
    7. not be on in-hours support in the same week that someone else from their team is also on in-hours support
+   8. not be on in-hours support in the same week after someone else from their team is also on in-hours support
 
 There's an asymmetry: the **primary** is required to be more
 experienced than the **secondary**, but the opposite is the case for

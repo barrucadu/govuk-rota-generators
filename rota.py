@@ -143,8 +143,10 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
             raise SolverError(dump, week, "secondary oncall is not experienced enough")
 
         for r0, p0 in assignments.items():
+            if p0 is None:
+                continue
             for r1, p1 in assignments.items():
-                if r1.value.n <= r0.value.n or p0 is None or p1 is None:
+                if r1.value.n <= r0.value.n or p1 is None:
                     continue
                 # 2.1
                 if p0 == p1:
@@ -152,6 +154,10 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
                 # 2.7
                 if r0.value.inhours and r1.value.inhours and people[p0].team == people[p1].team:
                     raise SolverError(dump, week, f"{p0} and {p1} are on the same team")
+            # 2.8
+            for r1, p1 in previous.items():
+                if r0.value.inhours and r1.value.inhours and people[p0].team == people[p1].team:
+                    raise SolverError(dump, week, f"{p0} and {p1} are on the same team in adjacent weeks")
 
         # 2.2
         for person in assignments.values():
@@ -295,6 +301,7 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
         prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Roles if role.value.escalation) <= max_escalation_shifts_per_person
 
         # [2.7] Not be on in-hours support in the same week that someone else from their team is also on in-hours support
+        # [2.8] Not be on in-hours support in the week after someone else from their team is also on in-hours support
         for week in range(num_weeks):
             for person2, p2 in people.items():
                 if person == person2:
@@ -302,6 +309,8 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
                 if p.team != p2.team:
                     continue
                 prob += pulp.lpSum(rota[week, person, role.name] for role in Roles if role.value.inhours) + pulp.lpSum(rota[week, person2, role.name] for role in Roles if role.value.inhours) <= 1
+                if week != 0:
+                    prob += pulp.lpSum(rota[week, person, role.name] for role in Roles if role.value.inhours) + pulp.lpSum(rota[week-1, person2, role.name] for role in Roles if role.value.inhours) <= 1
 
     ### Optimisations
 
