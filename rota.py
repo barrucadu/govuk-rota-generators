@@ -22,19 +22,19 @@ class SolverError(Exception):
 Person = collections.namedtuple('Person', ['team', 'can_do_inhours', 'num_times_inhours', 'num_times_shadow', 'can_do_oncall', 'num_times_oncall', 'can_do_escalations', 'forbidden_weeks'])
 
 # A role
-Role = collections.namedtuple('Role', ['n', 'inhours', 'oncall', 'escalation'])
+Role = collections.namedtuple('Role', ['n', 'inhours', 'oncall', 'escalation', 'mandatory'])
 
 
 class Roles(enum.Enum):
     """All the different types of role.
     """
 
-    PRIMARY          = Role(0, True, False, False)
-    SECONDARY        = Role(1, True, False, False)
-    SHADOW           = Role(2, True, False, False)
-    PRIMARY_ONCALL   = Role(3, False, True, False)
-    SECONDARY_ONCALL = Role(4, False, True, False)
-    ESCALATION       = Role(5, False, False, True)
+    PRIMARY          = Role(0, True, False, False, True)
+    SECONDARY        = Role(1, True, False, False, True)
+    SHADOW           = Role(2, True, False, False, False)
+    PRIMARY_ONCALL   = Role(3, False, True, False, True)
+    SECONDARY_ONCALL = Role(4, False, True, False, True)
+    ESCALATION       = Role(5, False, False, True, True)
 
 
 def is_assigned(var, week, person, role):
@@ -256,12 +256,10 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
 
         # [1.1] Each role must be assigned to exactly one person, except shadow which may be unassigned.
         for role in Roles:
-            prob += pulp.lpSum(rota[week, person, Roles.PRIMARY.name]          for person in people.keys()) == 1
-            prob += pulp.lpSum(rota[week, person, Roles.SECONDARY.name]        for person in people.keys()) == 1
-            prob += pulp.lpSum(rota[week, person, Roles.SHADOW.name]           for person in people.keys()) <= 1
-            prob += pulp.lpSum(rota[week, person, Roles.PRIMARY_ONCALL.name]   for person in people.keys()) == 1
-            prob += pulp.lpSum(rota[week, person, Roles.SECONDARY_ONCALL.name] for person in people.keys()) == 1
-            prob += pulp.lpSum(rota[week, person, Roles.ESCALATION.name]       for person in people.keys()) == 1
+            if role.value.mandatory:
+                prob += pulp.lpSum(rota[week, person, role.name] for person in people.keys()) == 1
+            else:
+                prob += pulp.lpSum(rota[week, person, role.name] for person in people.keys()) <= 1
 
         # [1.2.1] Primary must: be able to do in-hours support
         # [1.3.1] Secondary must: be able to do in-hours support
@@ -347,7 +345,8 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     obj += pulp.lpSum(rota[week, person, Roles.PRIMARY_ONCALL.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_oncall < 3)
 
     # [4] Maximise the number of weeks with a shadow
-    obj += pulp.lpSum(rota[week, person, Roles.SHADOW.name] for week in range(num_weeks) for person in people.keys())
+    # or: Maximise the number of role assignments; which will have the same effect as the mandatory roles are always assigned
+    obj += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for person in people.keys() for role in Roles)
 
     # Introduce a bit of randomisation by assigning each (week,person) pair a random score, and try to optimise the score
     scores = {}
