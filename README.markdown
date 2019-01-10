@@ -26,8 +26,7 @@ Subject to these constraints:
    4. **Shadow** must:
       1. be able to do in-hours support
       2. have shadowed at most once before (including earlier instances in this rota)
-   5. **Primary oncall** must:
-      1. be able to do out-of-hours support
+   5. **Primary oncall** must be able to do out-of-hours support
    6. **Secondary oncall** must:
       1. be able to do out-of-hours support
       2. have done out-of-hours support at least 3 times (including earlier instances in this rota)

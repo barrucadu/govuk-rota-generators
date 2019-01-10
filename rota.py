@@ -121,7 +121,7 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
             # 1.2.1, 1.3.1, 1.4.1
             if role.value.inhours and assignments[role] is not None and not people[assignments[role]].can_do_inhours:
                 raise SolverError(dump, week, f"{role.name.lower()} cannot do in-hours support")
-            # 1.5.1, 1.6.1
+            # 1.5, 1.6.1
             if role.value.oncall and assignments[role] is not None and not people[assignments[role]].can_do_oncall:
                 raise SolverError(dump, week, f"{role.name.lower()} cannot do on-call support")
             # 1.7
@@ -248,7 +248,7 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
         # [1.2.1] Primary must: be able to do in-hours support
         # [1.3.1] Secondary must: be able to do in-hours support
         # [1.4.1] Shadow must: be able to do in-hours support
-        # [1.5.1] Primary oncall must: be able to do out-of-hours support
+        # [1.5]   Primary oncall must: be able to do out-of-hours support
         # [1.6.1] Secondary oncall must: be able to do out-of-hours support
         # [1.7]   Escalation must: be able to do escalatons
         for person, p in people.items():
