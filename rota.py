@@ -177,7 +177,7 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
                 raise SolverError(dump, week, f"{person} has too many in-hours assignments")
 
 
-def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people, use_glpk = False):
+def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people, use_glpk = False, optimise = True):
     """Generate the mathematical model of the rota problem.
 
     Constraints [1.2.3] (primary exp >= secondary exp) and [1.6.3]
@@ -292,31 +292,26 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
 
     ### Optimisations
 
-    # [1] Minimise the maximum number of roles-assignments any one person has
-    # or: Maximise the number of people with assignments
-    # This is more important than the other optimisations (which are about reducing weeks which are bad in a fairly minor way) so give it a *1000 factor
-    obj = pulp.lpSum(assigned[person] for person in people.keys()) * 100
+    if optimise:
+        # [1] Minimise the maximum number of roles-assignments any one person has
+        # or: Maximise the number of people with assignments
+        # This is more important than the other optimisations (which are about reducing weeks which are bad in a fairly minor way) so give it a *1000 factor
+        obj = pulp.lpSum(assigned[person] for person in people.keys()) * 100
 
-    # [2] Maximise the number of weeks where secondary has been on in-hours support fewer than 3 times
-    obj += pulp.lpSum(rota[week, person, Roles.SECONDARY.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_inhours < 3)
+        # [2] Maximise the number of weeks where secondary has been on in-hours support fewer than 3 times
+        obj += pulp.lpSum(rota[week, person, Roles.SECONDARY.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_inhours < 3)
 
-    # [3] Maximise the number of weeks where primary oncall has been on out-of-hours support fewer than 3 times
-    obj += pulp.lpSum(rota[week, person, Roles.PRIMARY_ONCALL.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_oncall < 3)
+        # [3] Maximise the number of weeks where primary oncall has been on out-of-hours support fewer than 3 times
+        obj += pulp.lpSum(rota[week, person, Roles.PRIMARY_ONCALL.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_oncall < 3)
 
-    # [4] Maximise the number of weeks with a shadow
-    # or: Maximise the number of role assignments; which will have the same effect as the mandatory roles are always assigned
-    obj += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for person in people.keys() for role in Roles)
+        # [4] Maximise the number of weeks with a shadow
+        # or: Maximise the number of role assignments; which will have the same effect as the mandatory roles are always assigned
+        obj += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for person in people.keys() for role in Roles)
 
-    # Introduce a bit of randomisation by assigning each (week,person) pair a random score, and try to optimise the score
-    scores = {}
-    for week in range(num_weeks):
-        scores[week] = {}
-        for person in people.keys():
-            scores[week][person] = random.randint(0, 1)
+        # Introduce a bit of randomisation by assigning each (week,person) pair a random score, and try to optimise the score
+        randomise = pulp.lpSum(random.randint(0, 1) * rota[week, person, role.name] for week in range(num_weeks) for person in people.keys() for role in Roles)
 
-    randomise = pulp.lpSum(scores[week][person] * rota[week, person, role.name] for week in range(num_weeks) for person in people.keys() for role in Roles)
-
-    prob += obj * 100 + randomise
+        prob += obj * 100 + randomise
 
     if use_glpk:
         prob.solve(pulp.solvers.GLPK_CMD(options=['--mipgap', '0.001']))
