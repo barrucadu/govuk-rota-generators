@@ -10,7 +10,6 @@ roles:
 - **Primary** and **secondary**, in-hours support
 - **Shadow** *(optional)*, someone who learns the ropes in-hours
 - **Primary oncall** and **secondary oncall**, the out-of-hours support
-- **Escalation**, someone from the programme team
 
 Subject to these constraints:
 
@@ -85,19 +84,19 @@ There is a sample data file, `static/demo.csv`:
 
 ```
 > ./cli.py static/demo.csv
-week,primary,secondary,shadow,primary_oncall,secondary_oncall,escalation
-1,Santiago Mizer,Eleni Brandy,Camille Whitmarsh,Elvira Stefani,Galen Takemoto,Natalia Fordham
-2,Isaura Lafuente,Randell Gingras,Brant Paskett,Don Mong,Danielle Bence,Oren Bouska
-3,Eura Joseph,Hector Beckett,,Delisa Polson,David Reifsteck,Natalia Fordham
-4,Jessie Ahlquist,Lucile Spanbauer,,Eleni Brandy,Helen Jarrard,Carolyne Pflug
-5,Theodore Hagberg,Gussie Fridley,,Delisa Polson,Galen Takemoto,Clinton Istre
-6,Wilfredo Yoshida,Kristyn Wolverton,Allyson Mirando,Elvira Stefani,Eura Joseph,Oren Bouska
-7,Werner Rosenblatt,Lynn Steinhauer,Arlette Mckeighan,Eleni Brandy,Hector Beckett,Carolyne Pflug
-8,Raye Slone,Katerine Greenwood,,Elvira Stefani,Eura Joseph,Natalia Fordham
-9,Mauro Au,Reynalda Botelho,Buffy Nowacki,Eleni Brandy,Galen Takemoto,Oren Bouska
-10,Helen Jarrard,Sergio Mcdevitt,Breana Mar,Don Mong,Hector Beckett,Clarita Caiazzo
-11,Leticia Grable,Elvira Stefani,,Delisa Polson,Gussie Fridley,Clinton Istre
-12,Kristen Youngren,Verda Streit,Galen Takemoto,Don Mong,Hector Beckett,Carolyne Pflug
+week,primary,secondary,shadow,primary_oncall,secondary_oncall
+1,Santiago Mizer,Eleni Brandy,Camille Whitmarsh,Elvira Stefani,Galen Takemoto
+2,Isaura Lafuente,Randell Gingras,Brant Paskett,Don Mong,Danielle Bence
+3,Eura Joseph,Hector Beckett,,Delisa Polson,David Reifsteck
+4,Jessie Ahlquist,Lucile Spanbauer,,Eleni Brandy,Helen Jarrard
+5,Theodore Hagberg,Gussie Fridley,,Delisa Polson,Galen Takemoto
+6,Wilfredo Yoshida,Kristyn Wolverton,Allyson Mirando,Elvira Stefani,Eura Joseph
+7,Werner Rosenblatt,Lynn Steinhauer,Arlette Mckeighan,Eleni Brandy,Hector Beckett
+8,Raye Slone,Katerine Greenwood,,Elvira Stefani,Eura Joseph
+9,Mauro Au,Reynalda Botelho,Buffy Nowacki,Eleni Brandy,Galen Takemoto
+10,Helen Jarrard,Sergio Mcdevitt,Breana Mar,Don Mong,Hector Beckett
+11,Leticia Grable,Elvira Stefani,,Delisa Polson,Gussie Fridley
+12,Kristen Youngren,Verda Streit,Galen Takemoto,Don Mong,Hector Beckett
 ```
 
 ## Running on Heroku
