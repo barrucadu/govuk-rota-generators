@@ -15,7 +15,7 @@ roles:
 Subject to these constraints:
 
 1. In every week:
-   1. Each role must be assigned to exactly one person, except **shadow** and **escalation** which may be unassigned.
+   1. Each role must be assigned to exactly one person, except **shadow** which may be unassigned.
    2. **Primary** must:
       1. be able to do in-hours support
       2. have been on in-hours support at least 3 times (including earlier instances in this rota)
@@ -31,16 +31,14 @@ Subject to these constraints:
       1. be able to do out-of-hours support
       2. have done out-of-hours support at least 3 times (including earlier instances in this rota)
       3. be at least as experienced as **primary**
-  7. **Escalation** must be able to do escalations
 2. A person must:
    1. not be assigned more than one role in the same week
    2. not be assigned roles in two adjacent weeks
    3. not be assigned a role in a week they cannot do
    4. not be assigned more than `Ri` in-hours roles in total
    5. not be assigned more than `Ro` out-of-hours roles in total
-   6. not be assigned more than `Re` escalation roles in total
-   7. not be on in-hours support in the same week that someone else from their team is also on in-hours support
-   8. not be on in-hours support in the same week after someone else from their team is also on in-hours support
+   6. not be on in-hours support in the same week that someone else from their team is also on in-hours support
+   7. not be on in-hours support in the same week after someone else from their team is also on in-hours support
 
 There's an asymmetry: the **primary** is required to be more
 experienced than the **secondary**, but the opposite is the case for

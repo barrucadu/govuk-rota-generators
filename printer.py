@@ -10,7 +10,7 @@ def generate_rota_csv(num_weeks, people, model):
 
     out = io.StringIO()
 
-    fieldnames = ['week', 'primary', 'secondary', 'shadow', 'primary_oncall', 'secondary_oncall', 'escalation']
+    fieldnames = ['week', 'primary', 'secondary', 'shadow', 'primary_oncall', 'secondary_oncall']
     writer = csv.DictWriter(out, fieldnames=fieldnames)
     writer.writeheader()
 

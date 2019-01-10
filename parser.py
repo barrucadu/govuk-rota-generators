@@ -30,7 +30,7 @@ def parse_csv_row(rn, row):
 
     errors = []
 
-    if len(row) != 9:
+    if len(row) != 8:
         errors.append(f"Row {rn}: should have 8 elements")
         raise CSVException(errors)
 
@@ -41,8 +41,7 @@ def parse_csv_row(rn, row):
     num_times_shadow_str = row[4]
     can_do_oncall_str = row[5]
     num_times_oncall_str = row[6]
-    can_do_escalations_str = row[7]
-    forbidden_weeks_str = row[8]
+    forbidden_weeks_str = row[7]
 
     try:
         can_do_inhours = to_bool(can_do_inhours_str)
@@ -70,11 +69,6 @@ def parse_csv_row(rn, row):
         errors.append(f"Row {rn}: 'num_times_oncall' field should be an integer")
 
     try:
-        can_do_escalations = to_bool(can_do_escalations_str)
-    except ValueError:
-        errors.append(f"Row {rn}: 'can_do_escalations' field should be a boolean")
-
-    try:
         forbidden_weeks = [int(n) - 1 for n in forbidden_weeks_str.split(',') if n != '']
     except ValueError:
         errors.append(f"Row {rn}: 'forbidden_weeks' field should be a comma-separated list of weeks")
@@ -89,7 +83,6 @@ def parse_csv_row(rn, row):
         num_times_shadow = num_times_shadow,
         can_do_oncall = can_do_oncall,
         num_times_oncall = num_times_oncall,
-        can_do_escalations = can_do_escalations,
         forbidden_weeks = forbidden_weeks
     )
 
