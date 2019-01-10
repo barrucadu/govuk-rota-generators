@@ -36,7 +36,7 @@ class Roles(enum.Enum):
     SECONDARY_ONCALL = Role(4, False, True, True)
 
 
-def get_assignee(model, week, people, role):
+def get_assignee(dump, model, week, people, role):
     """Find who is assigned to the role, raise 'SolverError' if multiple
     people are.
     """
@@ -45,7 +45,7 @@ def get_assignee(model, week, people, role):
     for person in people.keys():
         if model(week, person, role):
             if out is not None:
-                raise SolverError(week, f"Multiple assignments to {role.name}")
+                raise SolverError(dump, week, f"Multiple assignments to {role.name}")
             out = person
     return out
 
@@ -103,7 +103,7 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     previous = {}
 
     for week in range(num_weeks):
-        assignments = {role: get_assignee(model, week, people, role) for role in Roles}
+        assignments = {role: get_assignee(dump, model, week, people, role) for role in Roles}
 
         for role in Roles:
             # 1.1 - just assume that this means there is no rota which meets the constraints
