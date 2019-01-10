@@ -106,9 +106,9 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
         assignments = {role: get_assignee(dump, model, week, people, role) for role in Roles}
 
         for role in Roles:
-            # 1.1 - just assume that this means there is no rota which meets the constraints
+            # 1.1
             if role.value.mandatory and assignments[role] is None:
-                raise NoSatisfyingRotaError()
+                raise SolverError(dump, week, f"{role.name.lower()} is unassigned")
             # 1.2.1, 1.3.1, 1.4.1
             if role.value.inhours and assignments[role] is not None and not people[assignments[role]].can_do_inhours:
                 raise SolverError(dump, week, f"{role.name.lower()} cannot do in-hours support")
@@ -325,6 +325,8 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
 
     model = lambda week, person, role: pulp.value(rota[week, person, role.name]) == 1
 
-    validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people, model)
+    if prob.status != pulp.constants.LpStatusOptimal:
+        raise NoSatisfyingRotaError()
 
+    validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people, model)
     return model
