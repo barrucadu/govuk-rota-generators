@@ -271,6 +271,7 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     # A person must:
     for person, p in people.items():
         # Constrain 'assigned' auxilliary variable.
+        prob += assigned[person] <= pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Roles)
         for week in range(num_weeks):
             prob += assigned[person] >= pulp.lpSum(rota[week, person, role.name] for role in Roles)
 
