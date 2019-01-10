@@ -270,7 +270,8 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
 
         # [2.3] Not be assigned a role in a week they cannot do
         for forbidden_week in p.forbidden_weeks:
-            prob += pulp.lpSum(rota[forbidden_week, person, role.name] for role in Roles) == 0
+            for role in Roles:
+                prob += rota[forbidden_week, person, role.name] == 0
 
         # [2.4] Not be assigned more than `max_inhours_shifts_per_person` in-hours roles in total
         prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Roles if role.value.inhours) <= max_inhours_shifts_per_person
