@@ -162,7 +162,7 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
                 times_oncall[person]       = times_oncall[person] + 1
                 assignments_oncall[person] = assignments_oncall[person] + 1
 
-        previous = {role: person for person in assignments.items() if person is not None}
+        previous = {role: person for role, person in assignments.items() if person is not None}
 
         for person, p in people.items():
             # 2.3
