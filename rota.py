@@ -37,28 +37,21 @@ class Roles(enum.Enum):
     ESCALATION       = Role(5, False, False, True, True)
 
 
-def is_assigned(var, week, person, role):
-    """Check if someone is assigned for a given role in a given week.
-    """
-
-    return pulp.value(var[week, person, role.name]) == 1
-
-
-def get_assignee(var, week, people, role):
+def get_assignee(model, week, people, role):
     """Find who is assigned to the role, raise 'SolverError' if multiple
     people are.
     """
 
     out = None
     for person in people.keys():
-        if is_assigned(var, week, person, role):
+        if model(week, person, role):
             if out is not None:
                 raise SolverError(week, f"Multiple assignments to {role.name}")
             out = person
     return out
 
 
-def dump_ilp(num_weeks, people, rota):
+def dump_ilp(num_weeks, people, model):
     """Generate a textual dump of the variable assignments.
     """
 
@@ -67,7 +60,7 @@ def dump_ilp(num_weeks, people, rota):
         assignments = {role: [] for role in Roles}
         for role in Roles:
             for person in people:
-                if is_assigned(rota, week, person, role):
+                if model(week, person, role):
                     assignments[role].append(person)
         dump.append([week, assignments[Roles.PRIMARY], assignments[Roles.SECONDARY], assignments[Roles.SHADOW], assignments[Roles.PRIMARY_ONCALL], assignments[Roles.SECONDARY_ONCALL], assignments[Roles.ESCALATION]])
 
@@ -91,7 +84,7 @@ def if_then(prob, var_a, k, var_b, var_d):
     prob += var_b <= m * (1 - var_d)
 
 
-def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people, rota):
+def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people, model):
     """Validate the rota meets the constraints - as Cbc returned an
     invalid one.
 
@@ -99,7 +92,7 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     for reasoning.
     """
 
-    dump = dump_ilp(num_weeks, people.keys(), rota)
+    dump = dump_ilp(num_weeks, people.keys(), model)
 
     times_inhours = {person: p.num_times_inhours for person, p in people.items()}
     times_shadow  = {person: p.num_times_shadow  for person, p in people.items()}
@@ -112,7 +105,7 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     previous = {}
 
     for week in range(num_weeks):
-        assignments = {role: get_assignee(rota, week, people, role) for role in Roles}
+        assignments = {role: get_assignee(model, week, people, role) for role in Roles}
 
         for role in Roles:
             # 1.1 - just assume that this means there is no rota which meets the constraints
@@ -346,6 +339,8 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     else:
         prob.solve(pulp.solvers.COIN_CMD())
 
-    validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people, rota)
+    model = lambda week, person, role: pulp.value(rota[week, person, role.name]) == 1
 
-    return rota
+    validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, max_escalation_shifts_per_person, people, model)
+
+    return model

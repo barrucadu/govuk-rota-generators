@@ -4,7 +4,7 @@ import io
 import rota
 
 
-def generate_rota_csv(num_weeks, people, var):
+def generate_rota_csv(num_weeks, people, model):
     """Turn a rota into a CSV.
     """
 
@@ -18,7 +18,7 @@ def generate_rota_csv(num_weeks, people, var):
         r = {'week': week + 1}
         for role in rota.Roles:
             for person in people.keys():
-                if rota.is_assigned(var, week, person, role):
+                if model(week, person, role):
                     r[role.name.lower()] = person
 
         # constraint [1.2.3]
