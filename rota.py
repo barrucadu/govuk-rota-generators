@@ -235,10 +235,10 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
         # [1.6.1] Secondary oncall must: be able to do out-of-hours support
         for person, p in people.items():
             for role in Roles:
-                if role.value.inhours:
-                    prob += rota[week, person, role.name] <= (1 if p.can_do_inhours else 0)
-                if role.value.oncall:
-                    prob += rota[week, person, role.name] <= (1 if p.can_do_oncall else 0)
+                if role.value.inhours and not p.can_do_inhours:
+                    prob += rota[week, person, role.name] == 0
+                if role.value.oncall and not p.can_do_oncall:
+                    prob += rota[week, person, role.name] == 0
 
         # [1.2.2] Primary must: have been on in-hours support at least 3 times
         # [1.3.2] Secondary must: have shadowed at least twice
