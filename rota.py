@@ -297,9 +297,8 @@ def generate_model(
 
         # [2.2] Not be assigned roles in two adjacent weeks
         for week in range(num_weeks):
-            if week == num_weeks - 1:
-                break
-            prob += pulp.lpSum(rota[week, person, role.name] for role in Roles) + pulp.lpSum(rota[week + 1, person, role.name] for role in Roles) <= 1
+            if week != 0:
+                prob += pulp.lpSum(rota[week, person, role.name] for role in Roles) + pulp.lpSum(rota[week - 1, person, role.name] for role in Roles) <= 1
 
         # [2.3] Not be assigned a role in a week they cannot do
         for forbidden_week in p.forbidden_weeks:
