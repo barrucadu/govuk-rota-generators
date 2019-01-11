@@ -112,3 +112,15 @@ def people_from_csv(csvfile):
         raise CSVException(errors)
 
     return people
+
+
+def parse_int(d, field, errors):
+    """Parse 'd[field]' as an int, or append an error to 'errors'.
+    """
+
+    try:
+        return int(d[field])
+    except KeyError:
+        errors.append(f"'{field}' is required")
+    except ValueError:
+        errors.append(f"'{field}' must be a number")

@@ -18,26 +18,9 @@ def generate_rota():
     form_errors = []
     csv_errors = []
 
-    try:
-        num_weeks = int(flask.request.form['num_weeks'])
-    except KeyError:
-        form_errors.append("Field 'num_weeks' is required")
-    except ValueError:
-        form_errors.append("Field 'num_weeks' must be a number")
-
-    try:
-        max_inhours_shifts_per_person = int(flask.request.form['max_inhours_shifts_per_person'])
-    except KeyError:
-        form_errors.append("Field 'max_inhours_shifts_per_person' is required")
-    except ValueError:
-        form_errors.append("Field 'max_inhours_shifts_per_person' must be a number")
-
-    try:
-        max_oncall_shifts_per_person = int(flask.request.form['max_oncall_shifts_per_person'])
-    except KeyError:
-        form_errors.append("Field 'max_oncall_shifts_per_person' is required")
-    except ValueError:
-        form_errors.append("Field 'max_oncall_shifts_per_person' must be a number")
+    num_weeks = parser.parse_int(flask.request.form, 'num_weeks', form_errors)
+    max_inhours_shifts_per_person = parser.parse_int(flask.request.form, 'max_inhours_shifts_per_person', form_errors)
+    max_oncall_shifts_per_person = parser.parse_int(flask.request.form, 'max_oncall_shifts_per_person', form_errors)
 
     try:
         csv_bytes = flask.request.files['people']

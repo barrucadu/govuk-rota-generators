@@ -25,32 +25,17 @@ import rota
 def generate_rota(args):
     errors = []
 
-    try:
-        num_weeks = int(args['--num-weeks'])
-    except KeyError:
-        errors.append("--num-weeks is required")
-    except ValueError:
-        errors.append("--num-weeks must be a number")
-
-    try:
-        max_inhours_shifts_per_person = int(args['--max-in-hours-shifts'])
-    except KeyError:
-        errors.append("--max-in-hours-shifts is required")
-    except ValueError:
-        errors.append("--max-in-hours-shifts must be a number")
-
-    try:
-        max_oncall_shifts_per_person = int(args['--max-on-call-shifts'])
-    except KeyError:
-        errors.append("--max-on-call-shifts is required")
-    except ValueError:
-        errors.append("--max-on-call-shifts must be a number")
+    num_weeks = parser.parse_int(args, '--num-weeks', errors)
+    max_inhours_shifts_per_person = parser.parse_int(args, '--max-in-hours-shifts', errors)
+    max_oncall_shifts_per_person = parser.parse_int(args, '--max-on-call-shifts', errors)
 
     try:
         with open(args['<file>'], 'r') as f:
             people = parser.people_from_csv(f)
     except KeyError:
         errors.append("<file> is required")
+    except FileNotFoundError:
+        errors.append(f"'{args['<file>']}' doesn't exist")
     except parser.CSVException as e:
         errors.extend(e.errors)
 
