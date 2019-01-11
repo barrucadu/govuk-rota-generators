@@ -60,10 +60,11 @@ def generate_rota(args):
         sys.exit(1)
 
     try:
-        model = rota.generate_model(people,
-                                    num_weeks = num_weeks,
-                                    max_inhours_shifts_per_person = max_inhours_shifts_per_person,
-                                    max_oncall_shifts_per_person = max_oncall_shifts_per_person
+        model = rota.generate_model(
+            people,
+            num_weeks=num_weeks,
+            max_inhours_shifts_per_person=max_inhours_shifts_per_person,
+            max_oncall_shifts_per_person=max_oncall_shifts_per_person
         )
     except rota.NoSatisfyingRotaError:
         print("There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person.")

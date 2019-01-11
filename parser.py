@@ -77,13 +77,13 @@ def parse_csv_row(rn, row):
         raise CSVException(errors)
 
     return person, rota.Person(
-        team = team,
-        can_do_inhours = can_do_inhours,
-        num_times_inhours = num_times_inhours,
-        num_times_shadow = num_times_shadow,
-        can_do_oncall = can_do_oncall,
-        num_times_oncall = num_times_oncall,
-        forbidden_weeks = forbidden_weeks
+        team=team,
+        can_do_inhours=can_do_inhours,
+        num_times_inhours=num_times_inhours,
+        num_times_shadow=num_times_shadow,
+        can_do_oncall=can_do_oncall,
+        num_times_oncall=num_times_oncall,
+        forbidden_weeks=forbidden_weeks
     )
 
 

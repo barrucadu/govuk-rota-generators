@@ -83,14 +83,15 @@ def if_then(prob, var_a, k, var_b, var_d):
     prob += var_b <= m * (1 - var_d)
 
 
-def validate_model(model, people,
-                   num_weeks = 2,
-                   max_inhours_shifts_per_person = 1,
-                   max_oncall_shifts_per_person = 3,
-                   times_inhours_for_primary = 3,
-                   times_shadow_for_secondary = 2,
-                   times_oncall_for_secondary = 2,
-                   max_times_shadow = 2,
+def validate_model(
+        model, people,
+        num_weeks=2,
+        max_inhours_shifts_per_person=1,
+        max_oncall_shifts_per_person=3,
+        times_inhours_for_primary=3,
+        times_shadow_for_secondary=2,
+        times_oncall_for_secondary=2,
+        max_times_shadow=2,
 ):
     """Validate the rota meets the constraints - as Cbc returned an
     invalid one.
@@ -185,16 +186,17 @@ def validate_model(model, people,
                 raise SolverError(dump, week, f"{person} has too many in-hours assignments")
 
 
-def generate_model(people,
-                   num_weeks = 2,
-                   max_inhours_shifts_per_person = 1,
-                   max_oncall_shifts_per_person = 3,
-                   times_inhours_for_primary = 3,
-                   times_shadow_for_secondary = 2,
-                   times_oncall_for_secondary = 2,
-                   max_times_shadow = 2,
-                   use_glpk = False,
-                   optimise = True
+def generate_model(
+        people,
+        num_weeks=2,
+        max_inhours_shifts_per_person=1,
+        max_oncall_shifts_per_person=3,
+        times_inhours_for_primary=3,
+        times_shadow_for_secondary=2,
+        times_oncall_for_secondary=2,
+        max_times_shadow=2,
+        use_glpk=False,
+        optimise=True
 ):
     """Generate the mathematical model of the rota problem.
 
@@ -355,13 +357,14 @@ def generate_model(people,
     if prob.status != pulp.constants.LpStatusOptimal:
         raise NoSatisfyingRotaError()
 
-    validate_model(model, people,
-                   num_weeks = num_weeks,
-                   max_inhours_shifts_per_person = max_inhours_shifts_per_person,
-                   max_oncall_shifts_per_person = max_oncall_shifts_per_person,
-                   times_inhours_for_primary = times_inhours_for_primary,
-                   times_shadow_for_secondary = times_shadow_for_secondary,
-                   times_oncall_for_secondary = times_oncall_for_secondary,
-                   max_times_shadow = max_times_shadow
+    validate_model(
+        model, people,
+        num_weeks = num_weeks,
+        max_inhours_shifts_per_person = max_inhours_shifts_per_person,
+        max_oncall_shifts_per_person = max_oncall_shifts_per_person,
+        times_inhours_for_primary = times_inhours_for_primary,
+        times_shadow_for_secondary = times_shadow_for_secondary,
+        times_oncall_for_secondary = times_oncall_for_secondary,
+        max_times_shadow = max_times_shadow
     )
     return model

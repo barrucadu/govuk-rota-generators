@@ -51,10 +51,11 @@ def generate_rota():
         return flask.render_template('error.html', form_errors=form_errors, csv_errors=csv_errors)
 
     try:
-        model = rota.generate_model(people,
-                                    num_weeks = num_weeks,
-                                    max_inhours_shifts_per_person = max_inhours_shifts_per_person,
-                                    max_oncall_shifts_per_person = max_oncall_shifts_per_person
+        model = rota.generate_model(
+            people,
+            num_weeks=num_weeks,
+            max_inhours_shifts_per_person=max_inhours_shifts_per_person,
+            max_oncall_shifts_per_person=max_oncall_shifts_per_person
         )
     except rota.NoSatisfyingRotaError:
         return flask.render_template('error.html', message="There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person."), 500
