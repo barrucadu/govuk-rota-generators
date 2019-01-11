@@ -263,10 +263,21 @@ def generate_model(people,
         # [1.2.2] Primary must: have been on in-hours support at least 3 times
         # [1.3.2] Secondary must: have shadowed at least twice
         # [1.6.2] Secondary oncall must: have done out-of-hours support at least 3 times
-        for person in people.keys():
-            if_then(prob, times_inhours[week, person], times_inhours_for_primary  - 1, rota[week, person, Roles.PRIMARY.name],          d[week, person, Roles.PRIMARY.name])
-            if_then(prob, times_shadow[week, person],  times_shadow_for_secondary - 1, rota[week, person, Roles.SECONDARY.name],        d[week, person, Roles.SECONDARY.name])
-            if_then(prob, times_oncall[week, person],  times_oncall_for_secondary - 1, rota[week, person, Roles.SECONDARY_ONCALL.name], d[week, person, Roles.SECONDARY_ONCALL.name])
+        for person, p in people.items():
+            if max_inhours_shifts_per_person == 1:
+                if p.num_times_inhours < times_inhours_for_primary:
+                    prob += rota[week, person, Roles.PRIMARY.name] == 0
+                if p.num_times_shadow < times_shadow_for_secondary:
+                    prob += rota[week, person, Roles.SECONDARY.name] == 0
+            else:
+                if_then(prob, times_inhours[week, person], times_inhours_for_primary  - 1, rota[week, person, Roles.PRIMARY.name],          d[week, person, Roles.PRIMARY.name])
+                if_then(prob, times_shadow[week, person],  times_shadow_for_secondary - 1, rota[week, person, Roles.SECONDARY.name],        d[week, person, Roles.SECONDARY.name])
+
+            if max_oncall_shifts_per_person == 1:
+                if p.num_times_oncall < times_oncall_for_secondary:
+                    prob += rota[week, person, Roles.SECONDARY_ONCALL.name] == 0
+            else:
+                if_then(prob, times_oncall[week, person],  times_oncall_for_secondary - 1, rota[week, person, Roles.SECONDARY_ONCALL.name], d[week, person, Roles.SECONDARY_ONCALL.name])
 
     # A person must:
     for person, p in people.items():
