@@ -83,7 +83,15 @@ def if_then(prob, var_a, k, var_b, var_d):
     prob += var_b <= m * (1 - var_d)
 
 
-def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people, model):
+def validate_model(model, people,
+                   num_weeks = 2,
+                   max_inhours_shifts_per_person = 1,
+                   max_oncall_shifts_per_person = 3,
+                   times_inhours_for_primary = 3,
+                   times_shadow_for_secondary = 2,
+                   times_oncall_for_secondary = 2,
+                   max_times_shadow = 2,
+):
     """Validate the rota meets the constraints - as Cbc returned an
     invalid one.
 
@@ -117,17 +125,17 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
                 raise SolverError(dump, week, f"{role.name.lower()} cannot do on-call support")
 
         # 1.2.2
-        if not times_inhours[assignments[Roles.PRIMARY]] >= 3:
+        if not times_inhours[assignments[Roles.PRIMARY]] >= times_inhours_for_primary:
             raise SolverError(dump, week, "primary is not experienced enough")
         # 1.3.2
-        if not times_shadow[assignments[Roles.SECONDARY]] >= 2:
+        if not times_shadow[assignments[Roles.SECONDARY]] >= times_shadow_for_secondary:
             raise SolverError(dump, week, "secondary is not experienced enough")
         if assignments[Roles.SHADOW] is not None:
             # 1.4.2
-            if not times_shadow[assignments[Roles.SHADOW]] <= 2:
+            if not times_shadow[assignments[Roles.SHADOW]] <= max_times_shadow:
                 raise SolverError(dump, week, "shadow has shadowed too many times")
         # 1.6.2
-        if not times_oncall[assignments[Roles.SECONDARY_ONCALL]] >= 3:
+        if not times_oncall[assignments[Roles.SECONDARY_ONCALL]] >= times_oncall_for_secondary:
             raise SolverError(dump, week, "secondary oncall is not experienced enough")
 
         for r0, p0 in assignments.items():
@@ -177,7 +185,17 @@ def validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
                 raise SolverError(dump, week, f"{person} has too many in-hours assignments")
 
 
-def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people, use_glpk = False, optimise = True):
+def generate_model(people,
+                   num_weeks = 2,
+                   max_inhours_shifts_per_person = 1,
+                   max_oncall_shifts_per_person = 3,
+                   times_inhours_for_primary = 3,
+                   times_shadow_for_secondary = 2,
+                   times_oncall_for_secondary = 2,
+                   max_times_shadow = 2,
+                   use_glpk = False,
+                   optimise = True
+):
     """Generate the mathematical model of the rota problem.
 
     Constraints [1.2.3] (primary exp >= secondary exp) and [1.6.3]
@@ -244,9 +262,9 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
         # [1.3.2] Secondary must: have shadowed at least twice
         # [1.6.2] Secondary oncall must: have done out-of-hours support at least 3 times
         for person in people.keys():
-            if_then(prob, times_inhours[week, person], 2, rota[week, person, Roles.PRIMARY.name],        d[week, person, Roles.PRIMARY.name])
-            if_then(prob, times_shadow[week, person],  1, rota[week, person, Roles.SECONDARY.name],      d[week, person, Roles.SECONDARY.name])
-            if_then(prob, times_oncall[week, person],  2, rota[week, person, Roles.SECONDARY_ONCALL.name], d[week, person, Roles.SECONDARY_ONCALL.name])
+            if_then(prob, times_inhours[week, person], times_inhours_for_primary  - 1, rota[week, person, Roles.PRIMARY.name],          d[week, person, Roles.PRIMARY.name])
+            if_then(prob, times_shadow[week, person],  times_shadow_for_secondary - 1, rota[week, person, Roles.SECONDARY.name],        d[week, person, Roles.SECONDARY.name])
+            if_then(prob, times_oncall[week, person],  times_oncall_for_secondary - 1, rota[week, person, Roles.SECONDARY_ONCALL.name], d[week, person, Roles.SECONDARY_ONCALL.name])
 
     # A person must:
     for person, p in people.items():
@@ -256,7 +274,7 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
             prob += assigned[person] >= pulp.lpSum(rota[week, person, role.name] for role in Roles)
 
         # [1.4.2] Not shadow more than twice
-        prob += p.num_times_shadow + pulp.lpSum(rota[week, person, Roles.SHADOW.name] for week in range(num_weeks)) <= 2
+        prob += p.num_times_shadow + pulp.lpSum(rota[week, person, Roles.SHADOW.name] for week in range(num_weeks)) <= max_times_shadow
 
         # [2.1] Not be assigned more than one role in the same week
         for week in range(num_weeks):
@@ -324,5 +342,13 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
     if prob.status != pulp.constants.LpStatusOptimal:
         raise NoSatisfyingRotaError()
 
-    validate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_per_person, people, model)
+    validate_model(model, people,
+                   num_weeks = num_weeks,
+                   max_inhours_shifts_per_person = max_inhours_shifts_per_person,
+                   max_oncall_shifts_per_person = max_oncall_shifts_per_person,
+                   times_inhours_for_primary = times_inhours_for_primary,
+                   times_shadow_for_secondary = times_shadow_for_secondary,
+                   times_oncall_for_secondary = times_oncall_for_secondary,
+                   max_times_shadow = max_times_shadow
+    )
     return model
