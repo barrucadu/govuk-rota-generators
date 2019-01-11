@@ -21,29 +21,29 @@ def generate_rota():
     try:
         num_weeks = int(flask.request.form['num_weeks'])
     except KeyError:
-        form_errors.append("Field 'num_weeks' is expected to exist")
+        form_errors.append("Field 'num_weeks' is required")
     except ValueError:
-        form_errors.append("Field 'num_weeks' is expected to be a number")
+        form_errors.append("Field 'num_weeks' must be a number")
 
     try:
         max_inhours_shifts_per_person = int(flask.request.form['max_inhours_shifts_per_person'])
     except KeyError:
-        form_errors.append("Field 'max_inhours_shifts_per_person' is expected to exist")
+        form_errors.append("Field 'max_inhours_shifts_per_person' is required")
     except ValueError:
-        form_errors.append("Field 'max_inhours_shifts_per_person' is expected to be a number")
+        form_errors.append("Field 'max_inhours_shifts_per_person' must be a number")
 
     try:
         max_oncall_shifts_per_person = int(flask.request.form['max_oncall_shifts_per_person'])
     except KeyError:
-        form_errors.append("Field 'max_oncall_shifts_per_person' is expected to exist")
+        form_errors.append("Field 'max_oncall_shifts_per_person' is required")
     except ValueError:
-        form_errors.append("Field 'max_oncall_shifts_per_person' is expected to be a number")
+        form_errors.append("Field 'max_oncall_shifts_per_person' must be a number")
 
     try:
         csv_bytes = flask.request.files['people']
         people = parser.people_from_csv(io.StringIO(csv_bytes.stream.read().decode("UTF8"), newline=None))
     except KeyError:
-        form_errors.append("Field 'people' is expected to exist")
+        form_errors.append("Field 'people' is required")
     except parser.CSVException as e:
         csv_errors = e.errors
 
