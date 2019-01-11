@@ -230,13 +230,15 @@ def generate_model(people,
     for week in range(num_weeks):
         # Constrain 'times_shadowed', 'times_inhoursed', and 'times_oncalled' auxilliary variables.
         for person, p in people.items():
-            if week == 0:
+            if week == 0 or max_inhours_shifts_per_person == 1:
                 prob += times_shadow[week, person]  == p.num_times_shadow
                 prob += times_inhours[week, person] == p.num_times_inhours
-                prob += times_oncall[week, person]  == p.num_times_oncall
             else:
                 prob += times_shadow[week, person]  == times_shadow[week - 1, person]  + rota[week - 1, person, Roles.SHADOW.name]
                 prob += times_inhours[week, person] == times_inhours[week - 1, person] + rota[week - 1, person, Roles.PRIMARY.name]        + rota[week - 1, person, Roles.SECONDARY.name]
+            if week == 0 or max_oncall_shifts_per_person == 1:
+                prob += times_oncall[week, person]  == p.num_times_oncall
+            else:
                 prob += times_oncall[week, person]  == times_oncall[week - 1, person]  + rota[week - 1, person, Roles.PRIMARY_ONCALL.name] + rota[week - 1, person, Roles.SECONDARY_ONCALL.name]
 
         # [1.1] Each role must be assigned to exactly one person, except shadow which may be unassigned.
