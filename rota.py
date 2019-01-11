@@ -256,7 +256,7 @@ def generate_model(num_weeks, max_inhours_shifts_per_person, max_oncall_shifts_p
             prob += assigned[person] >= pulp.lpSum(rota[week, person, role.name] for role in Roles)
 
         # [1.4.2] Not shadow more than twice
-        prob += times_shadow[num_weeks - 1, person] <= 2
+        prob += p.num_times_shadow + pulp.lpSum(rota[week, person, Roles.SHADOW.name] for week in range(num_weeks)) <= 2
 
         # [2.1] Not be assigned more than one role in the same week
         for week in range(num_weeks):
