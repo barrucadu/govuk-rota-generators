@@ -74,9 +74,12 @@ the [PuLP library][].  A reasonable introduction to ILP for solving
 scheduling problems like this is [the PyCon conference-scheduler
 docs][].
 
+I [wrote a memo][memo] going into some detail about how it all works.
+
 [integer linear programming]: https://en.wikipedia.org/wiki/Integer_programming
 [PuLP library]: https://pythonhosted.org/PuLP/
 [the PyCon conference-scheduler docs]: https://conference-scheduler.readthedocs.io/en/latest/background/mathematical_model.html
+[memo]: https://misc.barrucadu.co.uk/_site/scheduling-problems.html
 
 ## Demo
 
