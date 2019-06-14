@@ -77,7 +77,7 @@ def parse_csv_row(rn, row):
         raise CSVException(errors)
 
     return person, rota.Person(
-        team=team,
+        team=team.strip().lower(),
         can_do_inhours=can_do_inhours,
         num_times_inhours=num_times_inhours,
         num_times_shadow=num_times_shadow,
