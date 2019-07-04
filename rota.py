@@ -2,7 +2,6 @@ import collections
 import enum
 import pulp
 import random
-from tabulate import tabulate
 
 
 class NoSatisfyingRotaError(Exception):
