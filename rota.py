@@ -28,6 +28,44 @@ class Roles(enum.Enum):
     SECONDARY_ONCALL = Role(4, False, True, True)
 
 
+class Rota:
+    """A solved rota.
+    """
+
+    def __init__(self, model, num_weeks, people):
+        self.model = model
+        self.period_noun = 'week'
+        self.num_periods = num_weeks
+        self.roles = Roles
+        self.people = people
+
+
+    def is_assigned(self, week, person, role):
+        """Check if someone is assigned.
+        """
+
+        return pulp.value(self.model[week, person, role.name]) == 1
+
+
+    def post_process(self, assignments):
+        """Implement constraints 1.2.3 and 1.6.3.
+        """
+
+        # constraint [1.2.3]
+        primary   = assignments['primary']
+        secondary = assignments['secondary']
+        if self.people[primary].num_times_inhours < self.people[secondary].num_times_inhours:
+            assignments['primary']   = secondary
+            assignments['secondary'] = primary
+
+        # constraint [1.6.3]
+        primary_oncall   = assignments['primary_oncall']
+        secondary_oncall = assignments['secondary_oncall']
+        if self.people[secondary_oncall].num_times_oncall < self.people[primary_oncall].num_times_oncall:
+            assignments['primary_oncall']   = secondary_oncall
+            assignments['secondary_oncall'] = primary_oncall
+
+
 def if_then(prob, var_a, k, var_b, var_d):
     """Translate 'if var_a > k then var_b >= 0 else var_b = 0' into ILP constraints.
 
@@ -63,8 +101,9 @@ def generate_model(
     here, as they greatly slow down the solver (several seconds ->
     several minutes and counting), and the other constraints are
     sufficient to ensure qualified people are put in these roles.
-    Instead, the 'printer.generate_rota_csv' function swaps the people
-    if need be.
+    Instead, the 'Rota.post_process' function, called by the
+    'printer.generate_rota_csv' function, swaps the people if need
+    be.
     """
 
     prob = pulp.LpProblem(name='2ndline rota', sense=pulp.LpMaximize)
@@ -206,9 +245,7 @@ def generate_model(
 
     prob.solve(pulp.solvers.COIN_CMD())
 
-    model = lambda week, person, role: pulp.value(rota[week, person, role.name]) == 1
-
     if prob.status != pulp.constants.LpStatusOptimal:
         raise NoSatisfyingRotaError()
 
-    return model
+    return Rota(rota, num_weeks, people)
