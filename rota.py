@@ -54,7 +54,6 @@ def generate_model(
         times_shadow_for_secondary=2,
         times_oncall_for_secondary=2,
         max_times_shadow=2,
-        use_glpk=False,
         optimise=True
 ):
     """Generate the mathematical model of the rota problem.
@@ -205,10 +204,7 @@ def generate_model(
 
         prob += obj * 100 + randomise
 
-    if use_glpk:
-        prob.solve(pulp.solvers.GLPK_CMD(options=['--mipgap', '0.001']))
-    else:
-        prob.solve(pulp.solvers.COIN_CMD())
+    prob.solve(pulp.solvers.COIN_CMD())
 
     model = lambda week, person, role: pulp.value(rota[week, person, role.name]) == 1
 

@@ -61,11 +61,7 @@ then ties are broken arbitrarily.
 You need [Cbc][] (**C**oin-or **b**ranch and **c**ut) installed and in
 your `$PATH`.
 
-You can instead opt to use [GLPK][] (the GNU Linear Programming Kit),
-by passing `use_glpk = True` to `rota.generate_model`.
-
 [Cbc]: https://projects.coin-or.org/Cbc
-[GLPK]: https://www.gnu.org/software/glpk/
 
 ## Mathematical background
 
