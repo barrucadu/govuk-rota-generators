@@ -15,14 +15,42 @@ Options:
 """
 
 from docopt import docopt
+
+import csv
 import sys
 
+from rota import NoSatisfyingRotaError
+
 import parser
-import printer
-import rota
+import rota.govuk_2ndline as govuk_2ndline_rota
+
+
+def print_rota_csv(rota):
+    """Turn a rota into a CSV.
+    """
+
+    fieldnames = [rota.period_noun]
+    for role in rota.roles:
+        fieldnames.append(role.name.lower())
+
+    writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
+    writer.writeheader()
+
+    for period in range(rota.num_periods):
+        r = {rota.period_noun: period + 1}
+        for role in rota.roles:
+            for person in rota.people.keys():
+                if rota.is_assigned(period, person, role):
+                    r[role.name.lower()] = person
+
+        rota.post_process(r)
+        writer.writerow(r)
 
 
 def generate_rota(args):
+    """Generate and print the GOV.UK 2ndline support rota.
+    """
+
     errors = []
 
     num_weeks = parser.parse_int(args, '--num-weeks', errors)
@@ -45,18 +73,17 @@ def generate_rota(args):
         sys.exit(1)
 
     try:
-        model = rota.generate_model(
+        model = govuk_2ndline_rota.generate_model(
             people,
             num_weeks=num_weeks,
             max_inhours_shifts_per_person=max_inhours_shifts_per_person,
             max_oncall_shifts_per_person=max_oncall_shifts_per_person
         )
-    except rota.NoSatisfyingRotaError:
+    except NoSatisfyingRotaError:
         print("There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person.")
         sys.exit(2)
 
-    rota_csv_string = printer.generate_rota_csv(model)
-    print(rota_csv_string)
+    print_rota_csv(model)
 
 
 if __name__ == '__main__':

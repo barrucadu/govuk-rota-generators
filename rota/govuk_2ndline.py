@@ -3,9 +3,7 @@ import enum
 import pulp
 import random
 
-
-class NoSatisfyingRotaError(Exception):
-    pass
+from rota import *
 
 
 # A person who can appear in the rota.  People have no names, as
@@ -27,22 +25,16 @@ class Roles(enum.Enum):
     SECONDARY_ONCALL = Role(4, False, True, True)
 
 
-class Rota:
+class Govuk2ndLineRota(Rota):
     """A solved rota.
     """
 
     def __init__(self, model, num_weeks, people):
+        super().__init__('week', num_weeks, Roles, people)
         self.model = model
-        self.period_noun = 'week'
-        self.num_periods = num_weeks
-        self.roles = Roles
-        self.people = people
 
 
     def is_assigned(self, week, person, role):
-        """Check if someone is assigned.
-        """
-
         return pulp.value(self.model[week, person, role.name]) == 1
 
 
@@ -63,23 +55,6 @@ class Rota:
         if self.people[secondary_oncall].num_times_oncall < self.people[primary_oncall].num_times_oncall:
             assignments['primary_oncall']   = secondary_oncall
             assignments['secondary_oncall'] = primary_oncall
-
-
-def if_then(prob, var_a, k, var_b, var_d):
-    """Translate 'if var_a > k then var_b >= 0 else var_b = 0' into ILP constraints.
-
-    'var_d' must be a fresh decision variable.
-
-    See http://www.yzuda.org/Useful_Links/optimization/if-then-else-02.html
-    """
-
-    # a number bigger than the number of times someone can actually be on shift
-    m = 999
-
-    prob += var_a - k + m * var_d >= 1
-    prob += var_b + m * var_d >= 0
-    prob += var_a - k <= 0 + m * (1 - var_d)
-    prob += var_b <= m * (1 - var_d)
 
 
 def generate_model(
@@ -105,13 +80,12 @@ def generate_model(
     be.
     """
 
-    prob = pulp.LpProblem(name='2ndline rota', sense=pulp.LpMaximize)
-
-    # Model the rota as a [num weeks x num people x num roles] matrix, where rota[week,person,role] == that person has that role for that week.
-    rota = pulp.LpVariable.dicts('rota', ((week, person, role.name) for week in range(num_weeks) for person in people.keys() for role in Roles), cat='Binary')
-
-    # Auxilliary variable to track if someone is assigned
-    assigned = pulp.LpVariable.dicts('assigned', people.keys(), cat='Binary')
+    # Implements:
+    # [1.1] Each role must be assigned to exactly one person, except shadow which may be unassigned.
+    # [2.1] Not be assigned more than one role in the same week
+    prob, rota, assigned = basic_rota('2ndline rota', num_weeks, people.keys(), [role.name for role in Roles],
+        optional_roles=[role.name for role in Roles if not role.value.mandatory]
+    )
 
     # Auxilliary variables to track the number of times someone has shadowed, been a non-shadow in-hours, or been on-call
     times_shadow  = pulp.LpVariable.dicts('times_shadow',  ((week, person) for week in range(num_weeks) for person in people.keys()), cat='Integer')
@@ -138,13 +112,6 @@ def generate_model(
                 prob += times_oncall[week, person]  == p.num_times_oncall
             else:
                 prob += times_oncall[week, person]  == times_oncall[week - 1, person]  + rota[week - 1, person, Roles.PRIMARY_ONCALL.name] + rota[week - 1, person, Roles.SECONDARY_ONCALL.name]
-
-        # [1.1] Each role must be assigned to exactly one person, except shadow which may be unassigned.
-        for role in Roles:
-            if role.value.mandatory:
-                prob += pulp.lpSum(rota[week, person, role.name] for person in people.keys()) == 1
-            else:
-                prob += pulp.lpSum(rota[week, person, role.name] for person in people.keys()) <= 1
 
         # [1.2.1] Primary must: be able to do in-hours support
         # [1.3.1] Secondary must: be able to do in-hours support
@@ -179,17 +146,8 @@ def generate_model(
 
     # A person must:
     for person, p in people.items():
-        # Constrain 'assigned' auxilliary variable.
-        prob += assigned[person] <= pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Roles)
-        for week in range(num_weeks):
-            prob += assigned[person] >= pulp.lpSum(rota[week, person, role.name] for role in Roles)
-
         # [1.4.2] Not shadow more than twice
         prob += p.num_times_shadow + pulp.lpSum(rota[week, person, Roles.SHADOW.name] for week in range(num_weeks)) <= max_times_shadow
-
-        # [2.1] Not be assigned more than one role in the same week
-        for week in range(num_weeks):
-            prob += pulp.lpSum(rota[week, person, role.name] for role in Roles) <= 1
 
         # [2.2] Not be assigned roles in two adjacent weeks
         for week in range(num_weeks):
@@ -247,4 +205,4 @@ def generate_model(
     if prob.status != pulp.constants.LpStatusOptimal:
         raise NoSatisfyingRotaError()
 
-    return Rota(rota, num_weeks, people)
+    return Govuk2ndLineRota(rota, num_weeks, people)

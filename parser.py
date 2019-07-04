@@ -1,6 +1,6 @@
 import csv
 
-import rota
+import rota.govuk_2ndline as govuk_2ndline_rota
 
 
 class CSVException(Exception):
@@ -76,7 +76,7 @@ def parse_csv_row(rn, row):
     if errors:
         raise CSVException(errors)
 
-    return person, rota.Person(
+    return person, govuk_2ndline_rota.Person(
         team=team.strip().lower(),
         can_do_inhours=can_do_inhours,
         num_times_inhours=num_times_inhours,
