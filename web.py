@@ -42,8 +42,6 @@ def generate_rota():
         )
     except rota.NoSatisfyingRotaError:
         return flask.render_template('error.html', message="There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person."), 500
-    except rota.SolverError as e:
-        return flask.render_template('error.html', summary="Encountered an internal solver error", message=f"The first invalid week is week {e.week}: {e.problem}.", debug=e.dump), 500
 
     rota_csv_string = printer.generate_rota_csv(num_weeks, people, model)
     return flask.Response(rota_csv_string, mimetype = 'text/plain')

@@ -9,14 +9,6 @@ class NoSatisfyingRotaError(Exception):
     pass
 
 
-class SolverError(Exception):
-    def __init__(self, dump, week, problem):
-        super().__init__(f"Week {week}: {problem}\n{dump}")
-        self.dump = dump
-        self.week = week
-        self.problem = problem
-
-
 # A person who can appear in the rota.  People have no names, as
 # 'generate_model' is given a dict 'name -> person'.
 Person = collections.namedtuple('Person', ['team', 'can_do_inhours', 'num_times_inhours', 'num_times_shadow', 'can_do_oncall', 'num_times_oncall', 'forbidden_weeks'])
@@ -36,36 +28,6 @@ class Roles(enum.Enum):
     SECONDARY_ONCALL = Role(4, False, True, True)
 
 
-def get_assignee(dump, model, week, people, role):
-    """Find who is assigned to the role, raise 'SolverError' if multiple
-    people are.
-    """
-
-    out = None
-    for person in people.keys():
-        if model(week, person, role):
-            if out is not None:
-                raise SolverError(dump, week, f"Multiple assignments to {role.name}")
-            out = person
-    return out
-
-
-def dump_ilp(num_weeks, people, model):
-    """Generate a textual dump of the variable assignments.
-    """
-
-    dump = []
-    for week in range(num_weeks):
-        assignments = {role: [] for role in Roles}
-        for role in Roles:
-            for person in people:
-                if model(week, person, role):
-                    assignments[role].append(person)
-        dump.append([week, assignments[Roles.PRIMARY], assignments[Roles.SECONDARY], assignments[Roles.SHADOW], assignments[Roles.PRIMARY_ONCALL], assignments[Roles.SECONDARY_ONCALL]])
-
-    return tabulate(dump, ["week", "primary", "secondary", "shadow", "primary_oncall", "secondary_oncall"])
-
-
 def if_then(prob, var_a, k, var_b, var_d):
     """Translate 'if var_a > k then var_b >= 0 else var_b = 0' into ILP constraints.
 
@@ -81,109 +43,6 @@ def if_then(prob, var_a, k, var_b, var_d):
     prob += var_b + m * var_d >= 0
     prob += var_a - k <= 0 + m * (1 - var_d)
     prob += var_b <= m * (1 - var_d)
-
-
-def validate_model(
-        model, people,
-        num_weeks=2,
-        max_inhours_shifts_per_person=1,
-        max_oncall_shifts_per_person=3,
-        times_inhours_for_primary=3,
-        times_shadow_for_secondary=2,
-        times_oncall_for_secondary=2,
-        max_times_shadow=2,
-):
-    """Validate the rota meets the constraints - as Cbc returned an
-    invalid one.
-
-    Doesn't check constraints [1.2.3] or [1.6.3], see 'generate_model'
-    for reasoning.
-    """
-
-    dump = dump_ilp(num_weeks, people.keys(), model)
-
-    times_inhours = {person: p.num_times_inhours for person, p in people.items()}
-    times_shadow  = {person: p.num_times_shadow  for person, p in people.items()}
-    times_oncall  = {person: p.num_times_oncall  for person, p in people.items()}
-
-    assignments_inhours = {person: 0 for person in people.keys()}
-    assignments_oncall  = {person: 0 for person in people.keys()}
-
-    previous = {}
-
-    for week in range(num_weeks):
-        assignments = {role: get_assignee(dump, model, week, people, role) for role in Roles}
-
-        for role in Roles:
-            # 1.1
-            if role.value.mandatory and assignments[role] is None:
-                raise SolverError(dump, week, f"{role.name.lower()} is unassigned")
-            # 1.2.1, 1.3.1, 1.4.1
-            if role.value.inhours and assignments[role] is not None and not people[assignments[role]].can_do_inhours:
-                raise SolverError(dump, week, f"{role.name.lower()} cannot do in-hours support")
-            # 1.5, 1.6.1
-            if role.value.oncall and assignments[role] is not None and not people[assignments[role]].can_do_oncall:
-                raise SolverError(dump, week, f"{role.name.lower()} cannot do on-call support")
-
-        # 1.2.2
-        if not times_inhours[assignments[Roles.PRIMARY]] >= times_inhours_for_primary:
-            raise SolverError(dump, week, "primary is not experienced enough")
-        # 1.3.2
-        if not times_shadow[assignments[Roles.SECONDARY]] >= times_shadow_for_secondary:
-            raise SolverError(dump, week, "secondary is not experienced enough")
-        if assignments[Roles.SHADOW] is not None:
-            # 1.4.2
-            if not times_shadow[assignments[Roles.SHADOW]] <= max_times_shadow:
-                raise SolverError(dump, week, "shadow has shadowed too many times")
-        # 1.6.2
-        if not times_oncall[assignments[Roles.SECONDARY_ONCALL]] >= times_oncall_for_secondary:
-            raise SolverError(dump, week, "secondary oncall is not experienced enough")
-
-        for r0, p0 in assignments.items():
-            if p0 is None:
-                continue
-            for r1, p1 in assignments.items():
-                if r1.value.n <= r0.value.n or p1 is None:
-                    continue
-                # 2.1
-                if p0 == p1:
-                    raise SolverError(dump, week, f"{p0} has multiple assignments")
-                # 2.6
-                if r0.value.inhours and r1.value.inhours and people[p0].team == people[p1].team:
-                    raise SolverError(dump, week, f"{p0} and {p1} are on the same team")
-            # 2.7
-            for r1, p1 in previous.items():
-                if r0.value.inhours and r1.value.inhours and people[p0].team == people[p1].team:
-                    raise SolverError(dump, week, f"{p0} and {p1} are on the same team in adjacent weeks")
-
-        # 2.2
-        for person in assignments.values():
-            if person is not None and person in previous.values():
-                raise SolverError(dump, week, f"{person} has assignment in previous week")
-
-        for role, person in assignments.items():
-            if person is None:
-                continue
-            if role.value.inhours:
-                times_inhours[person]       = times_inhours[person] + 1
-                assignments_inhours[person] = assignments_inhours[person] + 1
-            if role.value.oncall:
-                times_oncall[person]       = times_oncall[person] + 1
-                assignments_oncall[person] = assignments_oncall[person] + 1
-
-        previous = {role: person for role, person in assignments.items() if person is not None}
-
-        for person, p in people.items():
-            # 2.3
-            if week in p.forbidden_weeks:
-                if person in assignments.values():
-                    raise SolverError(dump, week, f"{person} has assignment in forbidden week")
-            # 2.4
-            if assignments_inhours[person] > max_inhours_shifts_per_person:
-                raise SolverError(dump, week, f"{person} has too many in-hours assignments")
-            # 2.5
-            if assignments_oncall[person] > max_oncall_shifts_per_person:
-                raise SolverError(dump, week, f"{person} has too many in-hours assignments")
 
 
 def generate_model(
@@ -356,14 +215,4 @@ def generate_model(
     if prob.status != pulp.constants.LpStatusOptimal:
         raise NoSatisfyingRotaError()
 
-    validate_model(
-        model, people,
-        num_weeks = num_weeks,
-        max_inhours_shifts_per_person = max_inhours_shifts_per_person,
-        max_oncall_shifts_per_person = max_oncall_shifts_per_person,
-        times_inhours_for_primary = times_inhours_for_primary,
-        times_shadow_for_secondary = times_shadow_for_secondary,
-        times_oncall_for_secondary = times_oncall_for_secondary,
-        max_times_shadow = max_times_shadow
-    )
     return model

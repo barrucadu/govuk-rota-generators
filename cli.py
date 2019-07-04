@@ -54,9 +54,6 @@ def generate_rota(args):
     except rota.NoSatisfyingRotaError:
         print("There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person.")
         sys.exit(2)
-    except rota.SolverError as e:
-        print(str(e))
-        sys.exit(3)
 
     rota_csv_string = printer.generate_rota_csv(num_weeks, people, model)
     print(rota_csv_string)
