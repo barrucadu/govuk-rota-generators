@@ -49,12 +49,13 @@ def if_then(prob, var_a, k, var_b, var_d):
     prob += var_b <= m * (1 - var_d)
 
 
-def basic_rota(title, num_periods, person_names, role_names, optional_roles=[], sense=pulp.LpMaximize):
+def basic_rota(title, num_periods, person_names, role_names, optional_roles=[], personal_leave={}, sense=pulp.LpMaximize):
     """Generate a basic rota problem that ensures:
 
     - Each optional role is assigned at most once in each period.
     - Each non-optional role is assigned exactly once in each period.
     - A person is assigned at most one role in each period.
+    - A person is not assigned in any period they're on leave for.
     """
 
     prob = pulp.LpProblem(name=title, sense=pulp.LpMaximize)
@@ -82,5 +83,11 @@ def basic_rota(title, num_periods, person_names, role_names, optional_roles=[], 
     for person in person_names:
         for period in range(num_periods):
             prob += pulp.lpSum(rota[period, person, role] for role in role_names) <= 1
+
+    # A person is not assigned in any period they're on leave for
+    for person, leave_periods in personal_leave.items():
+        for period in leave_periods:
+            for role in role_names:
+                prob += rota[period, person, role] == 0
 
     return prob, rota, assigned

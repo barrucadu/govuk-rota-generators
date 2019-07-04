@@ -49,18 +49,17 @@ def __generate_model(args):
 
     num_periods = num_weeks * 5
 
-    # Implements:
-    # [1.1] Each role must be assigned to exactly one person, except shadow which may be unassigned.
-    # [2.1] Not be assigned more than one role in the same week
-    prob, rota, assigned = basic_rota('content support rota', num_periods, people.keys(), [role.name for role in Roles])
+    prob, rota, assigned = basic_rota('content support rota', num_periods, people.keys(), [role.name for role in Roles],
+        personal_leave={p: person.forbidden_periods for p, person in people.items() if person.forbidden_periods},
+    )
 
     # In every period:
     for period in range(num_periods):
-        # [1.2.1] 2i_a must be able to do 2i
-        # [1.2.2] 2i_b must be able to do 2i
-        # [1.3]   cr must be able to do cr
-        # [1.4.1] 2ndline_a must be able to do 2ndline
-        # [1.4.2] 2ndline_b must be able to do 2ndline
+        # [1.1] 2i_a must be able to do 2i
+        # [1.2] 2i_b must be able to do 2i
+        # [1.3] cr must be able to do cr
+        # [1.4] 2ndline_a must be able to do 2ndline
+        # [1.5] 2ndline_b must be able to do 2ndline
         for person, p in people.items():
             for role in Roles:
                 if role.value.is_2i and not p.can_do_2i:
@@ -70,7 +69,7 @@ def __generate_model(args):
                 if role.value.is_2ndline and not p.can_do_2ndline:
                     prob += rota[period, person, role.name] == 0
 
-        # [1.2.3] 2i_a must not be on the same team as 2i_b
+        # [1.6] 2i_a must not be on the same team as 2i_b
         for name1, p1 in people.items():
             if not p1.can_do_2i:
                 continue
@@ -84,13 +83,8 @@ def __generate_model(args):
 
     # A person must:
     for person, p in people.items():
-        # [2.2] not be assigned a role in a period they cannot do
-        for forbidden_period in p.forbidden_periods:
-            for role in Roles:
-                prob += rota[forbidden_period, person, role.name] == 0
-
         if p.team == 'product':
-            # [2.3] not be assigned multiple roles in the same 10 working day period if they are on a product team
+            # [2.1] not be assigned multiple roles in the same 10 working day period if they are on a product team
             for period_start in range(num_periods):
                 period_stop = min(period_start + 10, num_periods - 1) + 1 # inclusive
                 prob += pulp.lpSum(rota[period, person, role.name] for period in range(period_start, period_stop) for role in Roles) <= 1
@@ -101,7 +95,7 @@ def __generate_model(args):
                 period_stop = min(period_start + period_limit, num_periods - 1) + 1 # inclusive
                 prob += pulp.lpSum(rota[period, person, role.name] for period in range(period_start, period_stop) for role in Roles if not role.value.is_2ndline) <= 1
 
-        # [2.4] not be assigned roles on adjacent days
+        # [2.2] not be assigned roles on adjacent days
         for period in range(num_periods - 1):
             prob += pulp.lpSum(rota[period, person, role.name] for role in Roles) + pulp.lpSum(rota[period + 1, person, role.name] for role in Roles) <= 1
 
