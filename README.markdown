@@ -79,7 +79,7 @@ I [wrote a memo][memo] going into some detail about how it all works.
 
 ## Demo
 
-There is a sample data file, `static/demo.csv`:
+There is a sample data file, `demo.csv`:
 
 ```
 > ./cli.py static/demo.csv
@@ -97,13 +97,3 @@ week,primary,secondary,shadow,primary_oncall,secondary_oncall
 11,Leticia Grable,Elvira Stefani,,Delisa Polson,Gussie Fridley
 12,Kristen Youngren,Verda Streit,Galen Takemoto,Don Mong,Hector Beckett
 ```
-
-## Running on Heroku
-
-To run this you need the `heroku/python` and `heroku-community/apt`
-buildpacks.
-
-The apt buildpack doesn't install shared libraries to the usual
-places, so you also need to set `LD_LIBRARY_PATH` to
-`/app/.apt/usr/lib/x86_64-linux-gnu/lapack:/app/.apt/usr/lib/x86_64-linux-gnu/blas:/app/.apt/usr/lib/x86_64-linux-gnu`
-in your config vars.

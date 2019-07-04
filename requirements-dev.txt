@@ -1,4 +1,0 @@
-docopt
-flask
-pulp
-tabulate
