@@ -1,5 +1,6 @@
 import csv
 
+import rota.content_support as content_support_rota
 import rota.govuk_2ndline as govuk_2ndline_rota
 
 
@@ -24,7 +25,7 @@ def to_bool(s):
     raise ValueError(f"String '{s} not in {true_strings} or {false_strings}")
 
 
-def parse_csv_row(rn, row):
+def govuk_2ndline(rn, row):
     """Parse a row from the CSV, accumulating errors.
     """
 
@@ -34,14 +35,14 @@ def parse_csv_row(rn, row):
         errors.append(f"Row {rn}: should have 8 elements")
         raise CSVException(errors)
 
-    person = row[0]
-    team = row[1]
-    can_do_inhours_str = row[2]
-    num_times_inhours_str = row[3]
-    num_times_shadow_str = row[4]
-    can_do_oncall_str = row[5]
-    num_times_oncall_str = row[6]
-    forbidden_weeks_str = row[7]
+    person = row[0].strip()
+    team = row[1].lower().strip()
+    can_do_inhours_str = row[2].strip()
+    num_times_inhours_str = row[3].strip()
+    num_times_shadow_str = row[4].strip()
+    can_do_oncall_str = row[5].strip()
+    num_times_oncall_str = row[6].strip()
+    forbidden_weeks_str = row[7].strip()
 
     try:
         can_do_inhours = to_bool(can_do_inhours_str)
@@ -76,37 +77,74 @@ def parse_csv_row(rn, row):
     if errors:
         raise CSVException(errors)
 
-    return person, govuk_2ndline_rota.Person(
-        team=team.strip().lower(),
-        can_do_inhours=can_do_inhours,
-        num_times_inhours=num_times_inhours,
-        num_times_shadow=num_times_shadow,
-        can_do_oncall=can_do_oncall,
-        num_times_oncall=num_times_oncall,
-        forbidden_weeks=forbidden_weeks
-    )
+    return {
+        person: govuk_2ndline_rota.Person(
+            team=team,
+            can_do_inhours=can_do_inhours,
+            num_times_inhours=num_times_inhours,
+            num_times_shadow=num_times_shadow,
+            can_do_oncall=can_do_oncall,
+            num_times_oncall=num_times_oncall,
+            forbidden_weeks=forbidden_weeks
+        )
+    }
+
+def content_support(rn, row):
+    """Parse a row from the CSV, accumulating errors.
+    """
+
+    errors = []
+
+    if len(row) != 28:
+        errors.append(f"Row {rn}: should have 28 elements")
+        raise CSVException(errors)
+
+    people = {}
+    # each row has 4 people
+    for (off, team) in [(0, 'green'), (7, 'red'), (14, 'blue'), (21, 'product')]:
+        person = row[off + 0].strip()
+        role = row[off + 1].strip().lower()
+        can_do_2ndline = row[off + 2].strip().lower() == 'y'
+        can_do_cr = row[off + 3].strip().lower() == 'y'
+        can_do_2i = row[off + 4].strip().lower() == 'y'
+
+        if person == '':
+            continue
+
+        people[person] = content_support_rota.Person(
+            team=team,
+            role=role,
+            can_do_2i=can_do_2i,
+            can_do_cr=can_do_cr,
+            can_do_2ndline=can_do_2ndline,
+            forbidden_periods=[] # todo
+        )
+
+    if errors:
+        raise CSVException(errors)
+
+    return people
 
 
 
-def people_from_csv(csvfile):
+def parse_csv(csvfile, parse_row, skip=1):
     """Parse the people csv, accumulating errors.
     """
 
     reader = csv.reader(csvfile)
-    header = True
     people = {}
     errors = []
     rn = 0
     for row in reader:
-        if header:
-            header = False
-        else:
-            try:
-                person, p = parse_csv_row(rn, row)
-                people[person] = p
-            except CSVException as e:
-                errors.extend(e.errors)
         rn += 1
+        if skip > 0:
+            skip -= 1
+            continue
+        try:
+            for person, p in parse_row(rn, row).items():
+                people[person] = p
+        except CSVException as e:
+            errors.extend(e.errors)
 
     if errors:
         raise CSVException(errors)

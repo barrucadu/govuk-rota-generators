@@ -4,7 +4,8 @@
 GOV.UK 2ndline Rota Generator
 
 Usage:
-  cli.py [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>] <file>
+  cli.py govuk_2ndline   <file> [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>]
+  cli.py content_support <file> [--num-weeks=<n>]
   cli.py (-h | --help)
 
 Options:
@@ -22,6 +23,7 @@ import sys
 from rota import NoSatisfyingRotaError
 
 import parser
+import rota.content_support as content_support_rota
 import rota.govuk_2ndline as govuk_2ndline_rota
 
 
@@ -47,19 +49,13 @@ def print_rota_csv(rota):
         writer.writerow(r)
 
 
-def generate_rota(args):
-    """Generate and print the GOV.UK 2ndline support rota.
+def parse_csv_or_die(args, parse_row, errors=[], skip=1):
+    """Parse the CSV file or print the errors and exit.
     """
-
-    errors = []
-
-    num_weeks = parser.parse_int(args, '--num-weeks', errors)
-    max_inhours_shifts_per_person = parser.parse_int(args, '--max-in-hours-shifts', errors)
-    max_oncall_shifts_per_person = parser.parse_int(args, '--max-on-call-shifts', errors)
 
     try:
         with open(args['<file>'], 'r') as f:
-            people = parser.people_from_csv(f)
+            people = parser.parse_csv(f, parse_row, skip=skip)
     except KeyError:
         errors.append("<file> is required")
     except FileNotFoundError:
@@ -72,19 +68,53 @@ def generate_rota(args):
             print(e)
         sys.exit(1)
 
-    try:
-        model = govuk_2ndline_rota.generate_model(
-            people,
-            num_weeks=num_weeks,
-            max_inhours_shifts_per_person=max_inhours_shifts_per_person,
-            max_oncall_shifts_per_person=max_oncall_shifts_per_person
-        )
-    except NoSatisfyingRotaError:
-        print("There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person.")
-        sys.exit(2)
+    return people
 
-    print_rota_csv(model)
+
+def generate_govuk_2ndline_rota(args):
+    """Generate and print the GOV.UK 2ndline support rota.
+    """
+
+    errors = []
+
+    num_weeks = parser.parse_int(args, '--num-weeks', errors)
+    max_inhours_shifts_per_person = parser.parse_int(args, '--max-in-hours-shifts', errors)
+    max_oncall_shifts_per_person = parser.parse_int(args, '--max-on-call-shifts', errors)
+
+    people = parse_csv_or_die(args, parser.govuk_2ndline, errors=errors)
+
+    return govuk_2ndline_rota.generate_model(
+        people,
+        num_weeks=num_weeks,
+        max_inhours_shifts_per_person=max_inhours_shifts_per_person,
+        max_oncall_shifts_per_person=max_oncall_shifts_per_person
+    )
+
+
+def generate_content_support_rota(args):
+    """Generate and print the Content Support rota.
+    """
+
+    errors = []
+
+    num_weeks = parser.parse_int(args, '--num-weeks', errors)
+
+    people = parse_csv_or_die(args, parser.content_support, errors=errors, skip=4)
+
+    return content_support_rota.generate_model(
+        people,
+        num_weeks=num_weeks,
+    )
 
 
 if __name__ == '__main__':
-    generate_rota(docopt(__doc__))
+    try:
+        args = docopt(__doc__)
+        if args['govuk_2ndline']:
+            model = generate_govuk_2ndline_rota(args)
+        elif args['content_support']:
+            model = generate_content_support_rota(args)
+        print_rota_csv(model)
+    except NoSatisfyingRotaError:
+        print("There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person.")
+        sys.exit(2)
