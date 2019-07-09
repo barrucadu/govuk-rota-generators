@@ -155,7 +155,6 @@ def generate_model(
     soft_product_people_limit_bound = len([p for p in people.values() if p.team == 'product'])
 
     reduction = ['soft_scd_period_limit', 'soft_other_period_limit', 'soft_product_people_limit']
-    random.shuffle(reduction)
     while reduction:
         params.append((people, num_weeks, soft_scd_period_limit, soft_other_period_limit, soft_product_people_limit, optimise))
         if reduction[0] == 'soft_scd_period_limit':
@@ -172,7 +171,6 @@ def generate_model(
                 reduction.append('soft_other_period_limit')
             if soft_product_people_limit < soft_product_people_limit_bound:
                 reduction.append('soft_product_people_limit')
-            random.shuffle(reduction)
 
     with multiprocessing.Pool() as p:
         for ps in chunks_of(params, num_cores):
