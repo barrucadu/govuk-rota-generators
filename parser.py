@@ -32,7 +32,7 @@ def govuk_2ndline(rn, row):
     errors = []
 
     if len(row) != 8:
-        errors.append(f"Row {rn}: should have 8 elements")
+        errors.append(f"Row {rn}: should have 8 elements (got {len(row)})")
         raise CSVException(errors)
 
     person = row[0].strip()
@@ -47,32 +47,32 @@ def govuk_2ndline(rn, row):
     try:
         can_do_inhours = to_bool(can_do_inhours_str)
     except ValueError:
-        errors.append(f"Row {rn}: 'can_do_inhours' field should be a boolean")
+        errors.append(f"Row {rn}: 'can_do_inhours' field should be a boolean (got '{can_do_inhours_str}')")
 
     try:
         num_times_inhours = int(num_times_inhours_str)
     except ValueError:
-        errors.append(f"Row {rn}: 'num_times_inhours' field should be an integer")
+        errors.append(f"Row {rn}: 'num_times_inhours' field should be an integer (got '{num_times_inhours_str}')")
 
     try:
         num_times_shadow = int(num_times_shadow_str)
     except ValueError:
-        errors.append(f"Row {rn}: 'num_times_shadow' field should be an integer")
+        errors.append(f"Row {rn}: 'num_times_shadow' field should be an integer (got '{num_times_shadow_str}')")
 
     try:
         can_do_oncall = to_bool(can_do_oncall_str)
     except ValueError:
-        errors.append(f"Row {rn}: 'can_do_oncall' field should be a boolean")
+        errors.append(f"Row {rn}: 'can_do_oncall' field should be a boolean (got '{can_do_oncall_str}')")
 
     try:
         num_times_oncall = int(num_times_oncall_str)
     except ValueError:
-        errors.append(f"Row {rn}: 'num_times_oncall' field should be an integer")
+        errors.append(f"Row {rn}: 'num_times_oncall' field should be an integer (got '{num_times_oncall_str}')")
 
     try:
         forbidden_weeks = [int(n) - 1 for n in forbidden_weeks_str.split(',') if n != '']
     except ValueError:
-        errors.append(f"Row {rn}: 'forbidden_weeks' field should be a comma-separated list of weeks")
+        errors.append(f"Row {rn}: 'forbidden_weeks' field should be a comma-separated list of weeks (got '{forbidden_weeks_str}')")
 
     if errors:
         raise CSVException(errors)
@@ -85,7 +85,7 @@ def govuk_2ndline(rn, row):
             num_times_shadow=num_times_shadow,
             can_do_oncall=can_do_oncall,
             num_times_oncall=num_times_oncall,
-            forbidden_weeks=forbidden_weeks
+            forbidden_weeks=forbidden_weeks,
         )
     }
 
