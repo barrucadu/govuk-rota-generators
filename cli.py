@@ -5,7 +5,7 @@ GOV.UK 2ndline Rota Generator
 
 Usage:
   cli.py govuk_2ndline   <file> [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>]
-  cli.py content_support <file> [--num-weeks=<n>]
+  cli.py content_support <file> [--num-weeks=<n>] [--leave-start=<n>]
   cli.py (-h | --help)
 
 Options:
@@ -13,6 +13,7 @@ Options:
   --num-weeks=<n>            Number of weeks to generate [default: 12].
   --max-in-hours-shifts=<n>  Maximum number of in-hours shifts someone can have [default: 1].
   --max-on-call-shifts=<n>   Maximum number of on-call shifts someone can have [default: 3].
+  --leave-start=<n>          First period for the leave/unavailability columns [default: 1].
 """
 
 from docopt import docopt
@@ -49,13 +50,13 @@ def print_rota_csv(rota):
         writer.writerow(r)
 
 
-def parse_csv_or_die(args, parse_row, errors=[], skip=1):
+def parse_csv_or_die(args, parse_row, errors=[], skip=1, **kwargs):
     """Parse the CSV file or print the errors and exit.
     """
 
     try:
         with open(args['<file>'], 'r') as f:
-            people = parser.parse_csv(f, parse_row, skip=skip)
+            people = parser.parse_csv(f, parse_row, skip=skip, **kwargs)
     except KeyError:
         errors.append("<file> is required")
     except FileNotFoundError:
@@ -98,8 +99,13 @@ def generate_content_support_rota(args):
     errors = []
 
     num_weeks = parser.parse_int(args, '--num-weeks', errors)
+    leave_start = parser.parse_int(args, '--leave-start', errors)
 
-    people = parse_csv_or_die(args, parser.content_support, errors=errors, skip=4)
+    people = parse_csv_or_die(args, parser.content_support,
+        errors=errors,
+        skip=3,
+        leave_start=leave_start,
+    )
 
     return content_support_rota.generate_model(
         people,

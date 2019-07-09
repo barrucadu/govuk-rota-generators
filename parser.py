@@ -10,7 +10,7 @@ class CSVException(Exception):
         self.errors = errors
 
 
-def to_bool(s):
+def to_bool(s, lenient=False):
     """A stricter boolification function than 'bool'.
     """
 
@@ -19,7 +19,7 @@ def to_bool(s):
 
     if s.lower() in true_strings:
         return True
-    if s.lower() in false_strings:
+    if lenient or s.lower() in false_strings:
         return False
 
     raise ValueError(f"String '{s} not in {true_strings} or {false_strings}")
@@ -89,45 +89,63 @@ def govuk_2ndline(rn, row):
         )
     }
 
-def content_support(rn, row):
+def content_support(rn, row, leave_start=1):
     """Parse a row from the CSV, accumulating errors.
     """
 
     errors = []
 
-    if len(row) != 28:
-        errors.append(f"Row {rn}: should have 28 elements")
+    if len(row) < 8:
+        errors.append(f"Row {rn}: should have at least 8 elements")
         raise CSVException(errors)
 
-    people = {}
-    # each row has 4 people
-    for (off, team) in [(0, 'green'), (7, 'red'), (14, 'blue'), (21, 'product')]:
-        person = row[off + 0].strip()
-        role = row[off + 1].strip().lower()
-        can_do_2ndline = row[off + 2].strip().lower() == 'y'
-        can_do_cr = row[off + 3].strip().lower() == 'y'
-        can_do_2i = row[off + 4].strip().lower() == 'y'
+    team = row[0].split()[0].lower()
+    if team not in ['red', 'green', 'blue']:
+        team = 'product'
 
-        if person == '':
-            continue
+    person = row[1].strip()
+    role = row[2].strip().lower()
+    can_do_2ndline_str = row[3].strip()
+    can_do_cr_str = row[4].strip()
+    can_do_2i_str = row[5].strip()
 
-        people[person] = content_support_rota.Person(
+    try:
+        can_do_2ndline = to_bool(can_do_2ndline_str, lenient=True)
+    except ValueError:
+        errors.append(f"Row {rn}: 'can_do_2ndline' should be a boolean (got: '{can_do_2ndline_str}')")
+
+    try:
+        can_do_cr = to_bool(can_do_cr_str, lenient=True)
+    except ValueError:
+        errors.append(f"Row {rn}: 'can_do_cr' should be a boolean (got: '{can_do_cr_str}')")
+
+    try:
+        can_do_2i = to_bool(can_do_2i_str, lenient=True)
+    except ValueError:
+        errors.append(f"Row {rn}: 'can_do_2i' should be a boolean (got: '{can_do_2i_str}')")
+
+    forbidden_periods = []
+    for i in range(len(row) - 8):
+        if row[i + 8].strip() != '':
+            forbidden_periods.append(i + leave_start - 1)
+
+    if errors:
+        raise CSVException(errors)
+
+    return {
+        person: content_support_rota.Person(
             team=team,
             role=role,
             can_do_2i=can_do_2i,
             can_do_cr=can_do_cr,
             can_do_2ndline=can_do_2ndline,
-            forbidden_periods=[] # todo
+            forbidden_periods=forbidden_periods,
         )
-
-    if errors:
-        raise CSVException(errors)
-
-    return people
+    }
 
 
 
-def parse_csv(csvfile, parse_row, skip=1):
+def parse_csv(csvfile, parse_row, skip=1, **kwargs):
     """Parse the people csv, accumulating errors.
     """
 
@@ -141,7 +159,7 @@ def parse_csv(csvfile, parse_row, skip=1):
             skip -= 1
             continue
         try:
-            for person, p in parse_row(rn, row).items():
+            for person, p in parse_row(rn, row, **kwargs).items():
                 people[person] = p
         except CSVException as e:
             errors.extend(e.errors)
