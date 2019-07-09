@@ -29,7 +29,7 @@ class ContentSupportRota(Rota):
     """
 
     def __init__(self, model, num_periods, people):
-        super().__init__('period', num_periods, Roles, people)
+        super().__init__('day', num_periods, Roles, people)
         self.model = model
 
 
