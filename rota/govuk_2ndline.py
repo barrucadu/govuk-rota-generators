@@ -145,7 +145,10 @@ def generate_model(
     # A person must:
     for person, p in people.items():
         # [2.4.2] Not shadow more than twice
-        prob += p.num_times_shadow + pulp.lpSum(rota[week, person, Roles.SHADOW.name] for week in range(num_weeks)) <= max_times_shadow
+        if p.num_times_shadow > max_times_shadow:
+            prob += pulp.lpSum(rota[week, person, Roles.SHADOW.name] for week in range(num_weeks)) == 0
+        else:
+            prob += p.num_times_shadow + pulp.lpSum(rota[week, person, Roles.SHADOW.name] for week in range(num_weeks)) <= max_times_shadow
 
         # [3.1] Not be assigned roles in two adjacent weeks
         for week in range(num_weeks):
