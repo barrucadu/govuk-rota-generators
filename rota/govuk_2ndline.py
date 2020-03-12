@@ -63,9 +63,9 @@ def generate_model(
         max_inhours_shifts_per_person=1,
         max_oncall_shifts_per_person=3,
         times_inhours_for_primary=3,
-        times_shadow_for_secondary=2,
+        times_shadow_for_secondary=3,
         times_oncall_for_secondary=2,
-        max_times_shadow=2,
+        max_times_shadow=3,
         optimise=True
 ):
     """Generate the mathematical model of the rota problem.
@@ -124,7 +124,7 @@ def generate_model(
                     prob += rota[week, person, role.name] == 0
 
         # [2.1.2] Primary must: have been on in-hours support at least 3 times
-        # [2.2.2] Secondary must: have shadowed at least twice
+        # [2.2.2] Secondary must: have shadowed at least 3 times
         # [2.5.2] Secondary oncall must: have done out-of-hours support at least 3 times
         for person, p in people.items():
             if max_inhours_shifts_per_person == 1:
@@ -144,7 +144,7 @@ def generate_model(
 
     # A person must:
     for person, p in people.items():
-        # [2.4.2] Not shadow more than twice
+        # [2.4.2] Not shadow more than 3 times
         if p.num_times_shadow > max_times_shadow:
             prob += pulp.lpSum(rota[week, person, Roles.SHADOW.name] for week in range(num_weeks)) == 0
         else:
