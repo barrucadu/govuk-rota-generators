@@ -1,6 +1,8 @@
 Content support rota
 ====================
 
+**Not in use.**
+
 Generates a daily (in-hours, working days) rota with these roles:
 
 - **2i (A)** and **2i (B)**, 2i rota
