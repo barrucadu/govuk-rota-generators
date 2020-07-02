@@ -1,7 +1,6 @@
 import collections
 import enum
 import pulp
-import random
 
 from rota import Rota, basic_rota, if_then, NoSatisfyingRotaError
 
@@ -201,10 +200,7 @@ def generate_model(
         # or: Maximise the number of role assignments; which will have the same effect as the mandatory roles are always assigned
         obj += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for person in people.keys() for role in Roles)
 
-        # Introduce a bit of randomisation by assigning each (week,person) pair a random score, and try to optimise the score
-        randomise = pulp.lpSum(random.randint(0, 1) * rota[week, person, role.name] for week in range(num_weeks) for person in people.keys() for role in Roles)
-
-        prob += obj * 100 + randomise
+        prob += obj
 
     prob.solve(pulp.solvers.COIN_CMD())
 
