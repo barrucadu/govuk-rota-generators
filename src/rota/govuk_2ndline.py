@@ -1,27 +1,26 @@
 import collections
 import enum
 import pulp
-import random
 
-from rota import *
+from rota import Rota, basic_rota, if_then, NoSatisfyingRotaError
 
 
 # A person who can appear in the rota.  People have no names, as
 # 'generate_model' is given a dict 'name -> person'.
-Person = collections.namedtuple('Person', ['team', 'can_do_inhours', 'num_times_inhours', 'num_times_shadow', 'can_do_oncall', 'num_times_oncall', 'forbidden_weeks'])
+Person = collections.namedtuple("Person", ["team", "can_do_inhours", "num_times_inhours", "num_times_shadow", "can_do_oncall", "num_times_oncall", "forbidden_weeks"])
 
 # A role
-Role = collections.namedtuple('Role', ['n', 'inhours', 'oncall', 'mandatory'])
+Role = collections.namedtuple("Role", ["n", "inhours", "oncall", "mandatory"])
 
 
 class Roles(enum.Enum):
     """All the different types of role.
     """
 
-    PRIMARY          = Role(0, True, False, True)
-    SECONDARY        = Role(1, True, False, True)
-    SHADOW           = Role(2, True, False, False)
-    PRIMARY_ONCALL   = Role(3, False, True, True)
+    PRIMARY = Role(0, True, False, True)
+    SECONDARY = Role(1, True, False, True)
+    SHADOW = Role(2, True, False, False)
+    PRIMARY_ONCALL = Role(3, False, True, True)
     SECONDARY_ONCALL = Role(4, False, True, True)
 
 
@@ -30,43 +29,41 @@ class Govuk2ndLineRota(Rota):
     """
 
     def __init__(self, model, num_weeks, people):
-        super().__init__('week', num_weeks, Roles, people)
+        super().__init__("week", num_weeks, Roles, people)
         self.model = model
-
 
     def is_assigned(self, week, person, role):
         return pulp.value(self.model[week, person, role.name]) == 1
-
 
     def post_process(self, assignments):
         """Implement constraints 2.1.3 and 2.5.3.
         """
 
         # constraint [2.1.3]
-        primary   = assignments['primary']
-        secondary = assignments['secondary']
+        primary = assignments["primary"]
+        secondary = assignments["secondary"]
         if self.people[primary].num_times_inhours < self.people[secondary].num_times_inhours:
-            assignments['primary']   = secondary
-            assignments['secondary'] = primary
+            assignments["primary"] = secondary
+            assignments["secondary"] = primary
 
         # constraint [2.5.3]
-        primary_oncall   = assignments['primary_oncall']
-        secondary_oncall = assignments['secondary_oncall']
+        primary_oncall = assignments["primary_oncall"]
+        secondary_oncall = assignments["secondary_oncall"]
         if self.people[secondary_oncall].num_times_oncall < self.people[primary_oncall].num_times_oncall:
-            assignments['primary_oncall']   = secondary_oncall
-            assignments['secondary_oncall'] = primary_oncall
+            assignments["primary_oncall"] = secondary_oncall
+            assignments["secondary_oncall"] = primary_oncall
 
 
 def generate_model(
-        people,
-        num_weeks=2,
-        max_inhours_shifts_per_person=1,
-        max_oncall_shifts_per_person=3,
-        times_inhours_for_primary=3,
-        times_shadow_for_secondary=3,
-        times_oncall_for_secondary=2,
-        max_times_shadow=3,
-        optimise=True
+    people,
+    num_weeks=2,
+    max_inhours_shifts_per_person=1,
+    max_oncall_shifts_per_person=3,
+    times_inhours_for_primary=3,
+    times_shadow_for_secondary=3,
+    times_oncall_for_secondary=2,
+    max_times_shadow=3,
+    optimise=True,
 ):
     """Generate the mathematical model of the rota problem.
 
@@ -80,19 +77,23 @@ def generate_model(
     be.
     """
 
-    prob, rota, assigned = basic_rota('2ndline rota', num_weeks, people.keys(), [role.name for role in Roles],
+    prob, rota, assigned = basic_rota(
+        "2ndline rota",
+        num_weeks,
+        people.keys(),
+        [role.name for role in Roles],
         optional_roles=[role.name for role in Roles if not role.value.mandatory],
         personal_leave={p: person.forbidden_weeks for p, person in people.items() if person.forbidden_weeks},
     )
 
     # Auxilliary variables to track the number of times someone has shadowed, been a non-shadow in-hours, or been on-call
-    times_shadow  = pulp.LpVariable.dicts('times_shadow',  ((week, person) for week in range(num_weeks) for person in people.keys()), cat='Integer')
-    times_inhours = pulp.LpVariable.dicts('times_inhours', ((week, person) for week in range(num_weeks) for person in people.keys()), cat='Integer')
-    times_oncall  = pulp.LpVariable.dicts('times_oncall',  ((week, person) for week in range(num_weeks) for person in people.keys()), cat='Integer')
+    times_shadow = pulp.LpVariable.dicts("times_shadow", ((week, person) for week in range(num_weeks) for person in people.keys()), cat="Integer",)
+    times_inhours = pulp.LpVariable.dicts("times_inhours", ((week, person) for week in range(num_weeks) for person in people.keys()), cat="Integer",)
+    times_oncall = pulp.LpVariable.dicts("times_oncall", ((week, person) for week in range(num_weeks) for person in people.keys()), cat="Integer",)
 
     # Auxilliary decision variable for if-then constructs
     # http://www.yzuda.org/Useful_Links/optimization/if-then-else-02.html
-    d = pulp.LpVariable.dicts('d', ((week, person, role.name) for week in range(num_weeks) for person in people.keys() for role in Roles), cat='Binary')
+    d = pulp.LpVariable.dicts("d", ((week, person, role.name) for week in range(num_weeks) for person in people.keys() for role in Roles), cat="Binary",)
 
     ### Constraints
 
@@ -101,15 +102,15 @@ def generate_model(
         # Constrain 'times_shadowed', 'times_inhoursed', and 'times_oncalled' auxilliary variables.
         for person, p in people.items():
             if week == 0 or max_inhours_shifts_per_person == 1:
-                prob += times_shadow[week, person]  == p.num_times_shadow
+                prob += times_shadow[week, person] == p.num_times_shadow
                 prob += times_inhours[week, person] == p.num_times_inhours
             else:
-                prob += times_shadow[week, person]  == times_shadow[week - 1, person]  + rota[week - 1, person, Roles.SHADOW.name]
-                prob += times_inhours[week, person] == times_inhours[week - 1, person] + rota[week - 1, person, Roles.PRIMARY.name]        + rota[week - 1, person, Roles.SECONDARY.name]
+                prob += times_shadow[week, person] == times_shadow[week - 1, person] + rota[week - 1, person, Roles.SHADOW.name]
+                prob += times_inhours[week, person] == times_inhours[week - 1, person] + rota[week - 1, person, Roles.PRIMARY.name] + rota[week - 1, person, Roles.SECONDARY.name]
             if week == 0 or max_oncall_shifts_per_person == 1:
-                prob += times_oncall[week, person]  == p.num_times_oncall
+                prob += times_oncall[week, person] == p.num_times_oncall
             else:
-                prob += times_oncall[week, person]  == times_oncall[week - 1, person]  + rota[week - 1, person, Roles.PRIMARY_ONCALL.name] + rota[week - 1, person, Roles.SECONDARY_ONCALL.name]
+                prob += times_oncall[week, person] == times_oncall[week - 1, person] + rota[week - 1, person, Roles.PRIMARY_ONCALL.name] + rota[week - 1, person, Roles.SECONDARY_ONCALL.name]
 
         # [2.1.1] Primary must: be able to do in-hours support
         # [2.2.1] Secondary must: be able to do in-hours support
@@ -133,14 +134,20 @@ def generate_model(
                 if p.num_times_shadow < times_shadow_for_secondary:
                     prob += rota[week, person, Roles.SECONDARY.name] == 0
             else:
-                if_then(prob, times_inhours[week, person], times_inhours_for_primary  - 1, rota[week, person, Roles.PRIMARY.name],          d[week, person, Roles.PRIMARY.name])
-                if_then(prob, times_shadow[week, person],  times_shadow_for_secondary - 1, rota[week, person, Roles.SECONDARY.name],        d[week, person, Roles.SECONDARY.name])
+                if_then(
+                    prob, times_inhours[week, person], times_inhours_for_primary - 1, rota[week, person, Roles.PRIMARY.name], d[week, person, Roles.PRIMARY.name],
+                )
+                if_then(
+                    prob, times_shadow[week, person], times_shadow_for_secondary - 1, rota[week, person, Roles.SECONDARY.name], d[week, person, Roles.SECONDARY.name],
+                )
 
             if max_oncall_shifts_per_person == 1:
                 if p.num_times_oncall < times_oncall_for_secondary:
                     prob += rota[week, person, Roles.SECONDARY_ONCALL.name] == 0
             else:
-                if_then(prob, times_oncall[week, person],  times_oncall_for_secondary - 1, rota[week, person, Roles.SECONDARY_ONCALL.name], d[week, person, Roles.SECONDARY_ONCALL.name])
+                if_then(
+                    prob, times_oncall[week, person], times_oncall_for_secondary - 1, rota[week, person, Roles.SECONDARY_ONCALL.name], d[week, person, Roles.SECONDARY_ONCALL.name],
+                )
 
     # A person must:
     for person, p in people.items():
@@ -171,7 +178,9 @@ def generate_model(
                     continue
                 prob += pulp.lpSum(rota[week, person, role.name] for role in Roles if role.value.inhours) + pulp.lpSum(rota[week, person2, role.name] for role in Roles if role.value.inhours) <= 1
                 if week != 0:
-                    prob += pulp.lpSum(rota[week, person, role.name] for role in Roles if role.value.inhours) + pulp.lpSum(rota[week-1, person2, role.name] for role in Roles if role.value.inhours) <= 1
+                    prob += (
+                        pulp.lpSum(rota[week, person, role.name] for role in Roles if role.value.inhours) + pulp.lpSum(rota[week - 1, person2, role.name] for role in Roles if role.value.inhours) <= 1
+                    )
 
     ### Optimisations
 
@@ -191,10 +200,7 @@ def generate_model(
         # or: Maximise the number of role assignments; which will have the same effect as the mandatory roles are always assigned
         obj += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for person in people.keys() for role in Roles)
 
-        # Introduce a bit of randomisation by assigning each (week,person) pair a random score, and try to optimise the score
-        randomise = pulp.lpSum(random.randint(0, 1) * rota[week, person, role.name] for week in range(num_weeks) for person in people.keys() for role in Roles)
-
-        prob += obj * 100 + randomise
+        prob += obj
 
     prob.solve(pulp.solvers.COIN_CMD())
 

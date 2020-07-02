@@ -1,12 +1,11 @@
 import csv
 
-import rota.content_support as content_support_rota
 import rota.govuk_2ndline as govuk_2ndline_rota
 
 
 class CSVException(Exception):
     def __init__(self, errors):
-        super().__init__('Encountered errors parsing the CSV')
+        super().__init__("Encountered errors parsing the CSV")
         self.errors = errors
 
 
@@ -14,8 +13,8 @@ def to_bool(s, lenient=False):
     """A stricter boolification function than 'bool'.
     """
 
-    true_strings = ['true', 'yes', 'y', '1']
-    false_strings = ['false', 'no', 'n', '0']
+    true_strings = ["true", "yes", "y", "1"]
+    false_strings = ["false", "no", "n", "0"]
 
     if s.lower() in true_strings:
         return True
@@ -70,7 +69,7 @@ def govuk_2ndline(rn, row):
         errors.append(f"Row {rn}: 'num_times_oncall' field should be an integer (got '{num_times_oncall_str}')")
 
     try:
-        forbidden_weeks = [int(n) - 1 for n in forbidden_weeks_str.split(',') if n != '']
+        forbidden_weeks = [int(n) - 1 for n in forbidden_weeks_str.split(",") if n != ""]
     except ValueError:
         errors.append(f"Row {rn}: 'forbidden_weeks' field should be a comma-separated list of weeks (got '{forbidden_weeks_str}')")
 
@@ -88,61 +87,6 @@ def govuk_2ndline(rn, row):
             forbidden_weeks=forbidden_weeks,
         )
     }
-
-def content_support(rn, row, leave_start=1):
-    """Parse a row from the CSV, accumulating errors.
-    """
-
-    errors = []
-
-    if len(row) < 8:
-        errors.append(f"Row {rn}: should have at least 8 elements")
-        raise CSVException(errors)
-
-    team = row[0].split()[0].lower()
-    if team not in ['red', 'green', 'blue']:
-        team = 'product'
-
-    person = row[1].strip()
-    role = row[2].strip().lower()
-    can_do_2ndline_str = row[3].strip()
-    can_do_cr_str = row[4].strip()
-    can_do_2i_str = row[5].strip()
-
-    try:
-        can_do_2ndline = to_bool(can_do_2ndline_str, lenient=True)
-    except ValueError:
-        errors.append(f"Row {rn}: 'can_do_2ndline' should be a boolean (got: '{can_do_2ndline_str}')")
-
-    try:
-        can_do_cr = to_bool(can_do_cr_str, lenient=True)
-    except ValueError:
-        errors.append(f"Row {rn}: 'can_do_cr' should be a boolean (got: '{can_do_cr_str}')")
-
-    try:
-        can_do_2i = to_bool(can_do_2i_str, lenient=True)
-    except ValueError:
-        errors.append(f"Row {rn}: 'can_do_2i' should be a boolean (got: '{can_do_2i_str}')")
-
-    forbidden_periods = []
-    for i in range(len(row) - 8):
-        if row[i + 8].strip() != '':
-            forbidden_periods.append(i + leave_start - 1)
-
-    if errors:
-        raise CSVException(errors)
-
-    return {
-        person: content_support_rota.Person(
-            team=team,
-            role=role,
-            can_do_2i=can_do_2i,
-            can_do_cr=can_do_cr,
-            can_do_2ndline=can_do_2ndline,
-            forbidden_periods=forbidden_periods,
-        )
-    }
-
 
 
 def parse_csv(csvfile, parse_row, skip=1, **kwargs):

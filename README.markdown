@@ -5,30 +5,29 @@ It does what it says on the tin.
 
 
 ```
-$ ./cli.py
+$ python3 src
 Usage:
-  cli.py govuk_2ndline   <file> [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>]
-  cli.py content_support <file> [--num-weeks=<n>]
+  cli.py <file> [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>]
   cli.py (-h | --help)
 
-$ time ./cli.py govuk_2ndline demo.csv
+$ time ./cli.py demo.csv
 week,primary,secondary,shadow,primary_oncall,secondary_oncall
-1,Jerome Silveria,Grant Kornfeld,,Dewey Burgett,Dave Allred
-2,Annalisa Harrow,Temeka Lowy,,Martin Ashby,Jerold Bayes
-3,Lou Meidinger,Wilson Friesen,Pierre Paulhus,Ryan Averett,Jeannine Demos
-4,Theodore Calvery,Emanuel Leinen,,Dave Allred,Jame Truss
-5,Nyla Drozd,Jerald Vangundy,,Oswaldo Bonham,Ryan Averett
-6,Jeannine Demos,Jarrett Hord,,Lou Meidinger,Dewey Burgett
-7,Ryan Averett,Robin Hoose,,Neil Hockenberry,Jame Truss
-8,Rocco Morra,Sammie Shew,,Lou Meidinger,Annalisa Harrow
-9,Martin Ashby,Floyd Olsson,Vernon Minelli,Jerold Bayes,Jerome Silveria
-10,Bessie Engebretson,Lacy Auyeung,,Jeannine Demos,Ryan Averett
-11,Deloris Baldon,Benita Kunz,,Oswaldo Bonham,Neil Hockenberry
-12,Irwin Capehart,Santiago Raine,,Lou Meidinger,Jerome Silveria
+1,Annalisa Harrow,Temeka Lowy,,Jerome Silveria,Dave Allred
+2,Renae Paton,Wilson Friesen,,Ryan Averett,Jerold Bayes
+3,Jeannine Demos,Jerald Vangundy,,Dave Allred,Annalisa Harrow
+4,Irwin Capehart,Jarrett Hord,,Lou Meidinger,Jame Truss
+5,Jerome Silveria,Benita Kunz,,Dewey Burgett,Ryan Averett
+6,Deloris Baldon,Emanuel Leinen,,Lou Meidinger,Annalisa Harrow
+7,Dave Allred,Floyd Olsson,,Dewey Burgett,Jeannine Demos
+8,Nyla Drozd,Grant Kornfeld,,Ryan Averett,Annalisa Harrow
+9,Lou Meidinger,Lacy Auyeung,,Dave Allred,Oswaldo Bonham
+10,Martin Ashby,Sammie Shew,Ryan Averett,Jerold Bayes,Jerome Silveria
+11,Theodore Calvery,Robin Hoose,Vernon Minelli,Lou Meidinger,Dewey Burgett
+12,Rocco Morra,Santiago Raine,Pierre Paulhus,Neil Hockenberry,Oswaldo Bonham
 
-real    103.97s
-user    101.88s
-sys     1.89s
+real    33.38s
+user    32.99s
+sys     0.36s
 ```
 
 See the `docs` directory for explanations of how the rotas are defined
