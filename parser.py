@@ -5,7 +5,7 @@ import rota.govuk_2ndline as govuk_2ndline_rota
 
 class CSVException(Exception):
     def __init__(self, errors):
-        super().__init__('Encountered errors parsing the CSV')
+        super().__init__("Encountered errors parsing the CSV")
         self.errors = errors
 
 
@@ -13,8 +13,8 @@ def to_bool(s, lenient=False):
     """A stricter boolification function than 'bool'.
     """
 
-    true_strings = ['true', 'yes', 'y', '1']
-    false_strings = ['false', 'no', 'n', '0']
+    true_strings = ["true", "yes", "y", "1"]
+    false_strings = ["false", "no", "n", "0"]
 
     if s.lower() in true_strings:
         return True
@@ -69,7 +69,7 @@ def govuk_2ndline(rn, row):
         errors.append(f"Row {rn}: 'num_times_oncall' field should be an integer (got '{num_times_oncall_str}')")
 
     try:
-        forbidden_weeks = [int(n) - 1 for n in forbidden_weeks_str.split(',') if n != '']
+        forbidden_weeks = [int(n) - 1 for n in forbidden_weeks_str.split(",") if n != ""]
     except ValueError:
         errors.append(f"Row {rn}: 'forbidden_weeks' field should be a comma-separated list of weeks (got '{forbidden_weeks_str}')")
 

@@ -53,7 +53,7 @@ def parse_csv_or_die(args, parse_row, errors=[], skip=1, **kwargs):
     """
 
     try:
-        with open(args['<file>'], 'r') as f:
+        with open(args["<file>"], "r") as f:
             people = parser.parse_csv(f, parse_row, skip=skip, **kwargs)
     except KeyError:
         errors.append("<file> is required")
@@ -76,21 +76,16 @@ def generate_rota(args):
 
     errors = []
 
-    num_weeks = parser.parse_int(args, '--num-weeks', errors)
-    max_inhours_shifts_per_person = parser.parse_int(args, '--max-in-hours-shifts', errors)
-    max_oncall_shifts_per_person = parser.parse_int(args, '--max-on-call-shifts', errors)
+    num_weeks = parser.parse_int(args, "--num-weeks", errors)
+    max_inhours_shifts_per_person = parser.parse_int(args, "--max-in-hours-shifts", errors)
+    max_oncall_shifts_per_person = parser.parse_int(args, "--max-on-call-shifts", errors)
 
     people = parse_csv_or_die(args, parser.govuk_2ndline, errors=errors)
 
-    return govuk_2ndline_rota.generate_model(
-        people,
-        num_weeks=num_weeks,
-        max_inhours_shifts_per_person=max_inhours_shifts_per_person,
-        max_oncall_shifts_per_person=max_oncall_shifts_per_person
-    )
+    return govuk_2ndline_rota.generate_model(people, num_weeks=num_weeks, max_inhours_shifts_per_person=max_inhours_shifts_per_person, max_oncall_shifts_per_person=max_oncall_shifts_per_person,)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         args = docopt(__doc__)
         model = generate_rota(args)
