@@ -7,11 +7,10 @@ It does what it says on the tin.
 ```
 $ ./cli.py
 Usage:
-  cli.py govuk_2ndline   <file> [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>]
-  cli.py content_support <file> [--num-weeks=<n>]
+  cli.py <file> [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>]
   cli.py (-h | --help)
 
-$ time ./cli.py govuk_2ndline demo.csv
+$ time ./cli.py demo.csv
 week,primary,secondary,shadow,primary_oncall,secondary_oncall
 1,Jerome Silveria,Grant Kornfeld,,Dewey Burgett,Dave Allred
 2,Annalisa Harrow,Temeka Lowy,,Martin Ashby,Jerold Bayes
