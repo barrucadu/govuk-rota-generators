@@ -5,7 +5,7 @@ It does what it says on the tin.
 
 
 ```
-$ ./cli.py
+$ python3 src
 Usage:
   cli.py <file> [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>]
   cli.py (-h | --help)

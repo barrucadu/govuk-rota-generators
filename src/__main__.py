@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 GOV.UK 2ndline Rota Generator
 
@@ -85,11 +83,10 @@ def generate_rota(args):
     return govuk_2ndline_rota.generate_model(people, num_weeks=num_weeks, max_inhours_shifts_per_person=max_inhours_shifts_per_person, max_oncall_shifts_per_person=max_oncall_shifts_per_person,)
 
 
-if __name__ == "__main__":
-    try:
-        args = docopt(__doc__)
-        model = generate_rota(args)
-        print_rota_csv(model)
-    except NoSatisfyingRotaError:
-        print("There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person.")
-        sys.exit(2)
+try:
+    args = docopt(__doc__)
+    model = generate_rota(args)
+    print_rota_csv(model)
+except NoSatisfyingRotaError:
+    print("There is no rota meeting the constraints!  Try a shorter rota, or allowing more shifts per person.")
+    sys.exit(2)
