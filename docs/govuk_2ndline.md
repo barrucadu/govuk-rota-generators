@@ -132,8 +132,8 @@ Objectives
 ----------
 
 1. *Maximise* the number of people with assignments.
-2. *Maximise* the number of weeks where **secondary** has been on in-hours support fewer than 3 times.
-3. *Maximise* the number of weeks where **primary oncall** has been on out-of-hours support fewer than 3 times.
+2. *Maximise* the number of weeks where **secondary** has been on in-hours support fewer than `times_inhours_for_primary` times.
+3. *Maximise* the number of weeks where **primary oncall** has been on out-of-hours support fewer than `times_oncall_for_secondary` times.
 4. *Maximise* the number of weeks with a **shadow**.
 
 *Commentary:*
