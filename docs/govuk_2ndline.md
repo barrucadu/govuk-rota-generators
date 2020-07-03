@@ -111,7 +111,7 @@ Hard constraints
    2. not be assigned more than `Ri` in-hours roles in total
    3. not be assigned more than `Ro` out-of-hours roles in total
    4. not be on in-hours support in the same week that someone else from their team is also on in-hours support
-   5. not be on in-hours support in the same week after someone else from their team is also on in-hours support
+   5. not be on in-hours support in the week after someone else from their team is also on in-hours support
 
 *Commentary:*
 
