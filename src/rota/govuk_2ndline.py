@@ -125,7 +125,7 @@ def generate_model(
                     prob += rota[week, person, role.name] == 0
 
         # [2.1.2] Primary must: have been on in-hours support at least `times_inhours_for_primary` times
-        # [2.2.2] Secondary must: have shadowed at least 3 times
+        # [2.2.2] Secondary must: have shadowed at least `times_shadow_for_secondary` times
         # [2.5.2] Secondary oncall must: have done out-of-hours support at least `times_oncall_for_secondary` times
         for person, p in people.items():
             if max_inhours_shifts_per_person == 1:
