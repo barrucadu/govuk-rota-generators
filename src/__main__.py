@@ -10,7 +10,6 @@ Options:
   --num-weeks=<n>            Number of weeks to generate [default: 12].
   --max-in-hours-shifts=<n>  Maximum number of in-hours shifts someone can have [default: 1].
   --max-on-call-shifts=<n>   Maximum number of on-call shifts someone can have [default: 3].
-  --leave-start=<n>          First period for the leave/unavailability columns [default: 1].
 """
 
 from docopt import docopt
