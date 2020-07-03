@@ -93,23 +93,23 @@ Hard constraints
 2. In every week:
    1. **Primary** must:
       1. be able to do in-hours support
-      2. have been on in-hours support at least 3 times (including earlier instances in this rota)
+      2. have been on in-hours support at least `times_inhours_for_primary` times (including earlier instances in this rota)
       3. be at least as experienced as **secondary**
    2. **Secondary** must:
       1. be able to do in-hours support
-      2. have shadowed at least 3 times (including earlier instances in this rota)
+      2. have shadowed at least `times_shadow_for_secondary` times (including earlier instances in this rota)
    3. **Shadow** must:
       1. be able to do in-hours support
-      2. have shadowed at most 2 times before (including earlier instances in this rota)
+      2. have shadowed at most `max_times_shadow` times before (including earlier instances in this rota)
    4. **Primary oncall** must be able to do out-of-hours support
    5. **Secondary oncall** must:
       1. be able to do out-of-hours support
-      2. have done out-of-hours support at least 3 times (including earlier instances in this rota)
+      2. have done out-of-hours support at least `times_oncall_for_secondary` times (including earlier instances in this rota)
       3. be at least as experienced as **primary**
 3. A person must:
    1. not be assigned roles in two adjacent weeks
-   2. not be assigned more than `Ri` in-hours roles in total
-   3. not be assigned more than `Ro` out-of-hours roles in total
+   2. not be assigned more than `max-in-hours-shifts` in-hours roles in total
+   3. not be assigned more than `max-on-call-shifts` out-of-hours roles in total
    4. not be on in-hours support in the same week that someone else from their team is also on in-hours support
    5. not be on in-hours support in the week after someone else from their team is also on in-hours support
 
