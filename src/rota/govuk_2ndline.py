@@ -61,7 +61,7 @@ def generate_model(
     max_oncall_shifts_per_person=3,
     times_inhours_for_primary=3,
     times_shadow_for_secondary=3,
-    times_oncall_for_secondary=2,
+    times_oncall_for_secondary=3,
     max_times_shadow=3,
     optimise=True,
 ):
@@ -124,9 +124,9 @@ def generate_model(
                 if role.value.oncall and not p.can_do_oncall:
                     prob += rota[week, person, role.name] == 0
 
-        # [2.1.2] Primary must: have been on in-hours support at least 3 times
+        # [2.1.2] Primary must: have been on in-hours support at least `times_inhours_for_primary` times
         # [2.2.2] Secondary must: have shadowed at least 3 times
-        # [2.5.2] Secondary oncall must: have done out-of-hours support at least 3 times
+        # [2.5.2] Secondary oncall must: have done out-of-hours support at least `times_oncall_for_secondary` times
         for person, p in people.items():
             if max_inhours_shifts_per_person == 1:
                 if p.num_times_inhours < times_inhours_for_primary:
@@ -190,11 +190,11 @@ def generate_model(
         # This is more important than the other optimisations (which are about reducing weeks which are bad in a fairly minor way) so give it a *1000 factor
         obj = pulp.lpSum(assigned[person] for person in people.keys()) * 100
 
-        # [2] Maximise the number of weeks where secondary has been on in-hours support fewer than 3 times
-        obj += pulp.lpSum(rota[week, person, Roles.SECONDARY.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_inhours < 3)
+        # [2] Maximise the number of weeks where secondary has been on in-hours support fewer than `times_inhours_for_primary` times
+        obj += pulp.lpSum(rota[week, person, Roles.SECONDARY.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_inhours < times_inhours_for_primary)
 
-        # [3] Maximise the number of weeks where primary oncall has been on out-of-hours support fewer than 3 times
-        obj += pulp.lpSum(rota[week, person, Roles.PRIMARY_ONCALL.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_oncall < 3)
+        # [3] Maximise the number of weeks where primary oncall has been on out-of-hours support fewer than `times_oncall_for_secondary` times
+        obj += pulp.lpSum(rota[week, person, Roles.PRIMARY_ONCALL.name] for week in range(num_weeks) for person, p in people.items() if p.num_times_oncall < times_oncall_for_secondary)
 
         # [4] Maximise the number of weeks with a shadow
         # or: Maximise the number of role assignments; which will have the same effect as the mandatory roles are always assigned
