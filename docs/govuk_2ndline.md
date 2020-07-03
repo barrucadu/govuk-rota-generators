@@ -23,7 +23,7 @@ Parameters
 |:---------------------------- | -------:|:------------------------------------------------------------------ |
 | `times_inhours_for_primary`  |       3 | Number of in-hours shifts someone must have done to be a primary.  |
 | `times_shadow_for_secondary` |       3 | Number of shadow shifts someone must have done to be a secondary.  |
-| `times_oncall_for_secondary` |       2 | Number of on-call shifts someone must have done to be a secondary. |
+| `times_oncall_for_secondary` |       3 | Number of on-call shifts someone must have done to be a secondary. |
 | `max_times_shadow`           |       3 | Maximum number of times someone can shadow.                        |
 | `optimise`                   |  `true` | Whether to perform optimisations.                                  |
 

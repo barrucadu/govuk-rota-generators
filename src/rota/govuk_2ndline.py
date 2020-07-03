@@ -61,7 +61,7 @@ def generate_model(
     max_oncall_shifts_per_person=3,
     times_inhours_for_primary=3,
     times_shadow_for_secondary=3,
-    times_oncall_for_secondary=2,
+    times_oncall_for_secondary=3,
     max_times_shadow=3,
     optimise=True,
 ):
