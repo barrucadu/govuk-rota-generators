@@ -36,8 +36,9 @@ at least one role assignment."
 
 The generic way to solve a rota problem is to create these variables,
 add some standard constraints (following section) and some
-rota-specific constraints (eg, as documented in `2ndline.md`), and
-then get an ILP solver to find an assignment of the `A` variables.
+rota-specific constraints (eg, as documented in [the 2ndline
+rota](govuk_2ndline.md#constraints)), and then get an ILP solver to
+find an assignment of the `A` variables.
 
 
 

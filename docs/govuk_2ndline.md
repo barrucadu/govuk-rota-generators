@@ -86,10 +86,10 @@ Aubrey Staiger,Personalisation and programme,no,3,2,no,3,
 ```
 
 
-Hard constraints
-----------------
+Constraints
+-----------
 
-1. [Standard rota hard constraints](rota.md#standard-constraints)
+1. [Standard rota constraints](rota.md#standard-constraints)
 2. In every week:
    1. **Primary** must:
       1. be able to do in-hours support
@@ -120,12 +120,6 @@ experienced than the **secondary**, but the opposite is the case for
 on-call roles.  This is intentional!  If the **primary oncall** were
 more experienced, they would resolve every issue themselves and the
 less experienced one would never get to learn anything.
-
-
-Soft constraints
-----------------
-
-None.
 
 
 Objectives
