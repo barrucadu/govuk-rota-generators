@@ -202,7 +202,7 @@ def generate_model(
 
         prob += obj
 
-    prob.solve(pulp.solvers.COIN_CMD())
+    prob.solve(pulp.COIN_CMD())
 
     if prob.status != pulp.constants.LpStatusOptimal:
         raise NoSatisfyingRotaError()
