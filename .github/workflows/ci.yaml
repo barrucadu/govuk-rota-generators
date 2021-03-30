@@ -19,3 +19,11 @@ jobs:
           black -l200 src
           flake8 --max-line-len=200 src
           git diff --exit-code
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - name: Check Dependencies
+        run: |
+          pip install -r requirements.txt
