@@ -7,8 +7,7 @@ class NoSatisfyingRotaError(Exception):
 
 
 class Rota:
-    """A solved rota.
-    """
+    """A solved rota."""
 
     def __init__(self, period_noun, num_periods, roles, people):
         self.period_noun = period_noun
@@ -17,8 +16,7 @@ class Rota:
         self.people = people
 
     def is_assigned(self, period, person, role):
-        """Check if someone is assigned.
-        """
+        """Check if someone is assigned."""
 
         raise NotImplementedError()
 
