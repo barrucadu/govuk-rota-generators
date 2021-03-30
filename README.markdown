@@ -42,6 +42,18 @@ your `$PATH`.  Other dependencies are listed in
 
 [Cbc]: https://projects.coin-or.org/Cbc
 
+### Running in Docker
+
+Rather than install dependencies to your host machine, you can
+generate a rota in a Docker container:
+
+```bash
+$ docker run -it --rm -v $(pwd):/src -w /src python:3.9 bash
+$ apt-get update && apt-get install -y coinor-cbc
+$ pip install -r requirements-freeze.txt
+$ python3 src demo.csv
+```
+
 
 Mathematical background
 -----------------------
