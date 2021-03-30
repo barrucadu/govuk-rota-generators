@@ -3,14 +3,13 @@ govuk-rota-generators
 
 It does what it says on the tin.
 
-
 ```
 $ python3 src
 Usage:
   cli.py <file> [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>]
   cli.py (-h | --help)
 
-$ time ./cli.py demo.csv
+$ time python3 src demo.csv
 week,primary,secondary,shadow,primary_oncall,secondary_oncall
 1,Annalisa Harrow,Temeka Lowy,,Jerome Silveria,Dave Allred
 2,Renae Paton,Wilson Friesen,,Ryan Averett,Jerold Bayes
@@ -38,10 +37,22 @@ Dependencies
 ------------
 
 You need [Cbc][] (**C**oin-or **b**ranch and **c**ut) installed and in
-your `$PATH`.  Other dependencies are listed in `requirements.txt` and
-can be installed with `pip`.
+your `$PATH`.  Other dependencies are listed in
+`requirements-freeze.txt` and can be installed with `pip`.
 
 [Cbc]: https://projects.coin-or.org/Cbc
+
+### Running in Docker
+
+Rather than install dependencies to your host machine, you can
+generate a rota in a Docker container:
+
+```bash
+$ docker run -it --rm -v $(pwd):/src -w /src python:3.9 bash
+$ apt-get update && apt-get install -y coinor-cbc
+$ pip install -r requirements-freeze.txt
+$ python3 src demo.csv
+```
 
 
 Mathematical background
