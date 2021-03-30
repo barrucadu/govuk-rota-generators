@@ -3,14 +3,13 @@ govuk-rota-generators
 
 It does what it says on the tin.
 
-
 ```
 $ python3 src
 Usage:
   cli.py <file> [--num-weeks=<n>] [--max-in-hours-shifts=<n>] [--max-on-call-shifts=<n>]
   cli.py (-h | --help)
 
-$ time ./cli.py demo.csv
+$ time python3 src demo.csv
 week,primary,secondary,shadow,primary_oncall,secondary_oncall
 1,Annalisa Harrow,Temeka Lowy,,Jerome Silveria,Dave Allred
 2,Renae Paton,Wilson Friesen,,Ryan Averett,Jerold Bayes
