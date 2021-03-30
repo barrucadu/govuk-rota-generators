@@ -10,8 +10,7 @@ class CSVException(Exception):
 
 
 def to_bool(s, lenient=False):
-    """A stricter boolification function than 'bool'.
-    """
+    """A stricter boolification function than 'bool'."""
 
     true_strings = ["true", "yes", "y", "1"]
     false_strings = ["false", "no", "n", "0"]
@@ -25,8 +24,7 @@ def to_bool(s, lenient=False):
 
 
 def govuk_2ndline(rn, row):
-    """Parse a row from the CSV, accumulating errors.
-    """
+    """Parse a row from the CSV, accumulating errors."""
 
     errors = []
 
@@ -90,8 +88,7 @@ def govuk_2ndline(rn, row):
 
 
 def parse_csv(csvfile, parse_row, skip=1, **kwargs):
-    """Parse the people csv, accumulating errors.
-    """
+    """Parse the people csv, accumulating errors."""
 
     reader = csv.reader(csvfile)
     people = {}
@@ -115,8 +112,7 @@ def parse_csv(csvfile, parse_row, skip=1, **kwargs):
 
 
 def parse_int(d, field, errors):
-    """Parse 'd[field]' as an int, or append an error to 'errors'.
-    """
+    """Parse 'd[field]' as an int, or append an error to 'errors'."""
 
     try:
         return int(d[field])

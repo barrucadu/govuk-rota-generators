@@ -24,8 +24,7 @@ import rota.govuk_2ndline as govuk_2ndline_rota
 
 
 def print_rota_csv(rota):
-    """Turn a rota into a CSV.
-    """
+    """Turn a rota into a CSV."""
 
     fieldnames = [rota.period_noun]
     for role in rota.roles:
@@ -46,8 +45,7 @@ def print_rota_csv(rota):
 
 
 def parse_csv_or_die(args, parse_row, errors=[], skip=1, **kwargs):
-    """Parse the CSV file or print the errors and exit.
-    """
+    """Parse the CSV file or print the errors and exit."""
 
     try:
         with open(args["<file>"], "r") as f:
@@ -68,8 +66,7 @@ def parse_csv_or_die(args, parse_row, errors=[], skip=1, **kwargs):
 
 
 def generate_rota(args):
-    """Generate and print the GOV.UK 2ndline support rota.
-    """
+    """Generate and print the GOV.UK 2ndline support rota."""
 
     errors = []
 
@@ -79,7 +76,12 @@ def generate_rota(args):
 
     people = parse_csv_or_die(args, parser.govuk_2ndline, errors=errors)
 
-    return govuk_2ndline_rota.generate_model(people, num_weeks=num_weeks, max_inhours_shifts_per_person=max_inhours_shifts_per_person, max_oncall_shifts_per_person=max_oncall_shifts_per_person,)
+    return govuk_2ndline_rota.generate_model(
+        people,
+        num_weeks=num_weeks,
+        max_inhours_shifts_per_person=max_inhours_shifts_per_person,
+        max_oncall_shifts_per_person=max_oncall_shifts_per_person,
+    )
 
 
 try:
