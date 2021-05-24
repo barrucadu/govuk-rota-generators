@@ -90,7 +90,7 @@ def basic_rota(title, num_periods, person_names, role_names, optional_roles=[], 
     # A person is not assigned in any period they're on leave for
     for person, leave_periods in personal_leave.items():
         for period in leave_periods:
-            if period < num_periods:
+            if period >= 0 and period < num_periods:
                 for role in role_names:
                     prob += rota[period, person, role] == 0
 
