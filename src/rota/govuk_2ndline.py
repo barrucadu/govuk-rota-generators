@@ -2,7 +2,7 @@ import collections
 import enum
 import pulp
 
-from rota import Rota, basic_rota, if_then, NoSatisfyingRotaError
+from rota import Rota, basic_rota, NoSatisfyingRotaError
 
 
 # A person who can appear in the rota.  People have no names, as
@@ -83,48 +83,10 @@ def generate_model(
         personal_leave={p: person.forbidden_weeks for p, person in people.items() if person.forbidden_weeks},
     )
 
-    # Auxilliary variables to track the number of times someone has shadowed, been a non-shadow in-hours, or been on-call
-    times_shadow = pulp.LpVariable.dicts(
-        "times_shadow",
-        ((week, person) for week in range(num_weeks) for person in people.keys()),
-        cat="Integer",
-    )
-    times_inhours = pulp.LpVariable.dicts(
-        "times_inhours",
-        ((week, person) for week in range(num_weeks) for person in people.keys()),
-        cat="Integer",
-    )
-    times_oncall = pulp.LpVariable.dicts(
-        "times_oncall",
-        ((week, person) for week in range(num_weeks) for person in people.keys()),
-        cat="Integer",
-    )
-
-    # Auxilliary decision variable for if-then constructs
-    # http://www.yzuda.org/Useful_Links/optimization/if-then-else-02.html
-    d = pulp.LpVariable.dicts(
-        "d",
-        ((week, person, role.name) for week in range(num_weeks) for person in people.keys() for role in Roles),
-        cat="Binary",
-    )
-
     # ## Constraints
 
     # In every week:
     for week in range(num_weeks):
-        # Constrain 'times_shadowed', 'times_inhoursed', and 'times_oncalled' auxilliary variables.
-        for person, p in people.items():
-            if week == 0 or max_inhours_shifts_per_person == 1:
-                prob += times_shadow[week, person] == p.num_times_shadow
-                prob += times_inhours[week, person] == p.num_times_inhours
-            else:
-                prob += times_shadow[week, person] == times_shadow[week - 1, person] + rota[week - 1, person, Roles.SHADOW.name]
-                prob += times_inhours[week, person] == times_inhours[week - 1, person] + rota[week - 1, person, Roles.PRIMARY.name] + rota[week - 1, person, Roles.SECONDARY.name]
-            if week == 0 or max_oncall_shifts_per_person == 1:
-                prob += times_oncall[week, person] == p.num_times_oncall
-            else:
-                prob += times_oncall[week, person] == times_oncall[week - 1, person] + rota[week - 1, person, Roles.PRIMARY_ONCALL.name] + rota[week - 1, person, Roles.SECONDARY_ONCALL.name]
-
         # [2.1.1] Primary must: be able to do in-hours support
         # [2.2.1] Secondary must: be able to do in-hours support
         # [2.3.1] Shadow must: be able to do in-hours support
@@ -141,38 +103,12 @@ def generate_model(
         # [2.2.2] Secondary must: have shadowed at least `times_shadow_for_secondary` times
         # [2.5.2] Secondary oncall must: have done out-of-hours support at least `times_oncall_for_secondary` times
         for person, p in people.items():
-            if max_inhours_shifts_per_person == 1:
-                if p.num_times_inhours < times_inhours_for_primary:
-                    prob += rota[week, person, Roles.PRIMARY.name] == 0
-                if p.num_times_shadow < times_shadow_for_secondary:
-                    prob += rota[week, person, Roles.SECONDARY.name] == 0
-            else:
-                if_then(
-                    prob,
-                    times_inhours[week, person],
-                    times_inhours_for_primary - 1,
-                    rota[week, person, Roles.PRIMARY.name],
-                    d[week, person, Roles.PRIMARY.name],
-                )
-                if_then(
-                    prob,
-                    times_shadow[week, person],
-                    times_shadow_for_secondary - 1,
-                    rota[week, person, Roles.SECONDARY.name],
-                    d[week, person, Roles.SECONDARY.name],
-                )
-
-            if max_oncall_shifts_per_person == 1:
-                if p.num_times_oncall < times_oncall_for_secondary:
-                    prob += rota[week, person, Roles.SECONDARY_ONCALL.name] == 0
-            else:
-                if_then(
-                    prob,
-                    times_oncall[week, person],
-                    times_oncall_for_secondary - 1,
-                    rota[week, person, Roles.SECONDARY_ONCALL.name],
-                    d[week, person, Roles.SECONDARY_ONCALL.name],
-                )
+            if p.num_times_inhours < times_inhours_for_primary:
+                prob += rota[week, person, Roles.PRIMARY.name] == 0
+            if p.num_times_shadow < times_shadow_for_secondary:
+                prob += rota[week, person, Roles.SECONDARY.name] == 0
+            if p.num_times_oncall < times_oncall_for_secondary:
+                prob += rota[week, person, Roles.SECONDARY_ONCALL.name] == 0
 
     # A person must:
     for person, p in people.items():

@@ -93,18 +93,18 @@ Constraints
 2. In every week:
    1. **Primary** must:
       1. be able to do in-hours support
-      2. have been on in-hours support at least `times_inhours_for_primary` times (including earlier instances in this rota)
+      2. have been on in-hours support at least `times_inhours_for_primary` times (not including earlier instances in this rota)
       3. be at least as experienced as **secondary**
    2. **Secondary** must:
       1. be able to do in-hours support
-      2. have shadowed at least `times_shadow_for_secondary` times (including earlier instances in this rota)
+      2. have shadowed at least `times_shadow_for_secondary` times (not including earlier instances in this rota)
    3. **Shadow** must:
       1. be able to do in-hours support
-      2. have shadowed at most `max_times_shadow` times before (including earlier instances in this rota)
+      2. have shadowed at most `max_times_shadow` times before (not including earlier instances in this rota)
    4. **Primary oncall** must be able to do out-of-hours support
    5. **Secondary oncall** must:
       1. be able to do out-of-hours support
-      2. have done out-of-hours support at least `times_oncall_for_secondary` times (including earlier instances in this rota)
+      2. have done out-of-hours support at least `times_oncall_for_secondary` times (not including earlier instances in this rota)
       3. be at least as experienced as **primary**
 3. A person must:
    1. not be assigned roles in two adjacent weeks

@@ -29,22 +29,6 @@ class Rota:
         pass
 
 
-def if_then(prob, var_a, k, var_b, var_d):
-    """Translate 'if var_a > k then var_b >= 0 else var_b = 0' into ILP constraints.
-
-    'var_d' must be a fresh decision variable.
-
-    See http://www.yzuda.org/Useful_Links/optimization/if-then-else-02.html
-    """
-
-    # a number bigger than the number of times someone can actually be on shift
-    m = 999
-
-    prob += var_a - k + m * var_d >= 1
-    prob += var_b + m * var_d >= 0
-    prob += var_a - k <= 0 + m * (1 - var_d)
-    prob += var_b <= m * (1 - var_d)
-
 
 def basic_rota(title, num_periods, person_names, role_names, optional_roles=[], personal_leave={}, sense=pulp.LpMaximize, randomise=True):
     """Generate a basic rota problem that ensures:
