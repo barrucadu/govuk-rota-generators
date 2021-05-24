@@ -19,70 +19,66 @@ Parameters
 
 *Internal parameters:*
 
-| Name                         | Default | Description                                                        |
-|:---------------------------- | -------:|:------------------------------------------------------------------ |
-| `times_inhours_for_primary`  |       3 | Number of in-hours shifts someone must have done to be a primary.  |
-| `times_shadow_for_secondary` |       3 | Number of shadow shifts someone must have done to be a secondary.  |
-| `times_oncall_for_secondary` |       3 | Number of on-call shifts someone must have done to be a secondary. |
-| `max_times_shadow`           |       3 | Maximum number of times someone can shadow.                        |
-| `optimise`                   |  `true` | Whether optimise for the objective functions.                      |
+| Name        | Default | Description                                   |
+|:------------| -------:|:--------------------------------------------- |
+| `optimise`  |  `true` | Whether optimise for the objective functions. |
 
 
 Input format
 ------------
 
 - `name`: string (must be unique)
-- `team`: string (compared stripped and lowercased)
-- `can_do_inhours`: bool
-- `num_times_inhours`: integer, the number of in-hours non-shadow shifts up to the start of the rota period
-- `num_times_shadow`: integer, the number of in-hours shadow shifts up to the start of the rota period
-- `can_do_oncall`: bool
-- `num_times_oncall`: integer, the number of on-call shifts up to the start of the rota period
+- `team`: string (compared stripped and lowercased)-
+- `can_do_inhours_primary`: bool
+- `can_do_inhours_secondary`: bool
+- `can_do_inhours_shadow`: bool
+- `can_do_oncall_primary`: bool
+- `can_do_oncall_secondary`: bool
 - `forbidden_weeks`: integer comma-separated list, weeks unavailable (week 1 = first week of the generated rota)
 
 *Example:*
 
 ```csv
-name,team,can_do_inhours,num_times_inhours,num_times_shadow,can_do_oncall,num_times_oncall,forbidden_weeks
-Oswaldo Bonham,Platform Health,yes,3,2,yes,3,
-Jame Truss,Platform Health,yes,3,2,yes,3,
-Jarrett Hord,Platform Health ,yes,0,2,no,0,
-Neil Hockenberry,Platform Health,yes,3,2,yes,3,
-Grant Kornfeld,Platform Health,yes,0,2,no,0,
-Bessie Engebretson,Platform Health,yes,3,2,no,0,
-Emanuel Leinen,Platform Health ,yes,2,2,no,0,
-Sammie Shew,Platform Health,yes,1,2,no,0,
-Renae Paton,Platform Health,yes,3,2,no,0,"4,5,6"
-Santiago Raine,Platform Health,yes,2,2,no,0,
-Chas Stucky,Platform Health,no,0,1,no,0,
-Ryan Averett,Publishing Access and Security,yes,3,2,yes,3,
-Martin Ashby,FE Dev and Accessibility,yes,3,2,yes,3,"1,3,4,5,6,7,8"
-Deloris Baldon,FE Dev and Accessibility,yes,3,2,no,0,
-Nyla Drozd,FE Dev and Accessibility,yes,3,2,no,0,"1,2"
-Pierre Paulhus,FE Dev and Accessibility,yes,0,0,no,0,
-Jerome Silveria,Search,yes,3,2,yes,3,
-Wilson Friesen,Structured data,yes,2,2,no,0,
-Robin Hoose,Search,yes,2,2,no,0,
-Floyd Olsson,Search,yes,3,2,no,0,
-Lou Meidinger,Search,yes,3,2,yes,1,"1,2"
+name,team,can_do_inhours_primary,can_do_inhours_secondary,can_do_inhours_shadow,can_do_oncall_primary,can_do_oncall_secondary,forbidden_weeks
+Oswaldo Bonham,Platform Health,yes,yes,no,yes,yes,
+Jame Truss,Platform Health,yes,yes,no,yes,yes,
+Jarrett Hord,Platform Health,yes,yes,no,no,yes,
+Neil Hockenberry,Platform Health,yes,yes,no,yes,yes,
+Grant Kornfeld,Platform Health,yes,yes,no,no,yes,
+Bessie Engebretson,Platform Health,yes,yes,no,no,no,
+Emanuel Leinen,Platform Health ,yes,yes,no,no,no,
+Sammie Shew,Platform Health,yes,yes,no,no,yes,
+Renae Paton,Platform Health,yes,yes,no,no,yes,"4,5,6"
+Santiago Raine,Platform Health,yes,yes,no,no,yes,
+Chas Stucky,Platform Health,no,no,yes,no,no,
+Ryan Averett,Publishing Access and Security,yes,yes,no,yes,yes,
+Martin Ashby,FE Dev and Accessibility,yes,yes,no,yes,yes,"1,3,4,5,6,7,8"
+Deloris Baldon,FE Dev and Accessibility,yes,yes,no,no,no,
+Nyla Drozd,FE Dev and Accessibility,yes,yes,no,no,no,"1,2"
+Pierre Paulhus,FE Dev and Accessibility,yes,yes,no,no,no,
+Jerome Silveria,Search,yes,yes,no,yes,yes,
+Wilson Friesen,Structured data,yes,yes,no,no,yes,
+Robin Hoose,Search,yes,yes,no,no,yes,
+Floyd Olsson,Search,yes,yes,no,no,yes,
+Lou Meidinger,Search,yes,yes,no,yes,1,"1,2"
 Sharleen Woltz,Search,no,0,1,no,0,
 Ramon Haddock,Search,no,0,1,no,0,
-Jerald Vangundy,Search,yes,2,2,no,0,
-Theodore Calvery,Taxonomy,yes,3,2,no,0,
-Dewey Burgett,Publisher Workflow,yes,3,2,yes,3,
-Irwin Capehart,Publisher Workflow,yes,3,2,no,0,
-Jerold Bayes,Publisher Workflow,yes,3,2,yes,3,"5,6,7,12"
-Annalisa Harrow,Publisher Workflow,yes,3,2,yes,3,
-Dave Allred,Publisher Workflow,yes,3,2,yes,3,
-Rocco Morra,Publisher Workflow,yes,3,2,no,0,
-Eddie Mccollough,Publisher Workflow,no,0,0,no,0,
-Lacy Auyeung,Publisher Workflow,yes,2,2,no,0,
-Glynda Laubscher,Publisher Workflow,no,0,1,no,0,"1,8,10,11,12"
-Jeannine Demos,Step by step,yes,3,2,yes,3,"1,2"
-Vernon Minelli,Step by step,yes,0,1,no,0,
-Temeka Lowy,Step by step,yes,0,2,no,0,
-Benita Kunz,Step by step,yes,0,2,no,0,
-Aubrey Staiger,Personalisation and programme,no,3,2,no,3,
+Jerald Vangundy,Search,yes,yes,no,no,0,
+Theodore Calvery,Taxonomy,yes,yes,no,no,0,
+Dewey Burgett,Publisher Workflow,yes,yes,no,yes,yes,
+Irwin Capehart,Publisher Workflow,yes,yes,no,no,yes,
+Jerold Bayes,Publisher Workflow,yes,yes,no,yes,yes,"5,6,7,12"
+Annalisa Harrow,Publisher Workflow,yes,yes,no,yes,yes,
+Dave Allred,Publisher Workflow,yes,yes,no,yes,yes,
+Rocco Morra,Publisher Workflow,yes,yes,no,no,no,
+Eddie Mccollough,Publisher Workflow,no,0,0,no,no,
+Lacy Auyeung,Publisher Workflow,yes,yes,no,no,yes,
+Glynda Laubscher,Publisher Workflow,no,no,yes,no,no,"1,8,10,11,12"
+Jeannine Demos,Step by step,yes,yes,no,yes,yes,"1,2"
+Vernon Minelli,Step by step,yes,yes,no,no,no,
+Temeka Lowy,Step by step,yes,yes,no,no,yes,
+Benita Kunz,Step by step,yes,yes,no,no,no,
+Aubrey Staiger,Personalisation and programme,no,yes,no,no,no,
 ```
 
 
@@ -90,35 +86,20 @@ Constraints
 -----------
 
 1. [Standard rota constraints](rota.md#standard-constraints)
-2. In every week:
-   1. **Primary** must:
-      1. be able to do in-hours support
-      2. have been on in-hours support at least `times_inhours_for_primary` times (not including earlier instances in this rota)
-   2. **Secondary** must:
-      1. be able to do in-hours support
-      2. have shadowed at least `times_shadow_for_secondary` times (not including earlier instances in this rota)
-   3. **Shadow** must:
-      1. be able to do in-hours support
-      2. have shadowed at most `max_times_shadow` times before (not including earlier instances in this rota)
-   4. **Primary oncall** must be able to do out-of-hours support
-   5. **Secondary oncall** must:
-      1. be able to do out-of-hours support
-      2. have done out-of-hours support at least `times_oncall_for_secondary` times (not including earlier instances in this rota)
-3. A person must:
-   1. not be assigned roles in two adjacent weeks
-   2. not be assigned more than `max-in-hours-shifts` in-hours roles in total
-   3. not be assigned more than `max-on-call-shifts` out-of-hours roles in total
-   4. not be on in-hours support in the same week that someone else from their team is also on in-hours support
-   5. not be on in-hours support in the week after someone else from their team is also on in-hours support
+2. A person must:
+   1. not be assigned a role they can't take
+   2. not be assigned roles in two adjacent weeks
+   3. not be assigned more than `max-in-hours-shifts` in-hours roles in total
+   4. not be assigned more than `max-on-call-shifts` out-of-hours roles in total
+   5. not be on in-hours support in the same week that someone else from their team is also on in-hours support
+   6. not be on in-hours support in the week after someone else from their team is also on in-hours support
 
 
 Objectives
 ----------
 
 1. *Maximise* the number of people with assignments.
-2. *Maximise* the number of weeks where **secondary** has been on in-hours support fewer than `times_inhours_for_primary` times.
-3. *Maximise* the number of weeks where **primary oncall** has been on out-of-hours support fewer than `times_oncall_for_secondary` times.
-4. *Maximise* the number of weeks with a **shadow**.
+2. *Maximise* the number of weeks with a **shadow**.
 
 *Commentary:*
 

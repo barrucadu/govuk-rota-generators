@@ -1,40 +1,40 @@
-name,team,can_do_inhours,num_times_inhours,num_times_shadow,can_do_oncall,num_times_oncall,forbidden_weeks
-Oswaldo Bonham,Platform Health,yes,3,3,yes,3,
-Jame Truss,Platform Health,yes,3,3,yes,3,
-Jarrett Hord,Platform Health ,yes,0,3,no,0,
-Neil Hockenberry,Platform Health,yes,3,3,yes,3,
-Grant Kornfeld,Platform Health,yes,0,3,no,0,
-Bessie Engebretson,Platform Health,yes,3,3,no,0,
-Emanuel Leinen,Platform Health ,yes,2,3,no,0,
-Sammie Shew,Platform Health,yes,1,3,no,0,
-Renae Paton,Platform Health,yes,3,3,no,0,"4,5,6"
-Santiago Raine,Platform Health,yes,2,3,no,0,
-Chas Stucky,Platform Health,no,0,1,no,0,
-Ryan Averett,Publishing Access and Security,yes,3,2,yes,3,
-Martin Ashby,FE Dev and Accessibility,yes,3,3,yes,3,"1,3,4,5,6,7,8"
-Deloris Baldon,FE Dev and Accessibility,yes,3,3,no,0,
-Nyla Drozd,FE Dev and Accessibility,yes,3,3,no,0,"1,2"
-Pierre Paulhus,FE Dev and Accessibility,yes,0,0,no,0,
-Jerome Silveria,Search,yes,3,3,yes,3,
-Wilson Friesen,Structured data,yes,2,3,no,0,
-Robin Hoose,Search,yes,2,3,no,0,
-Floyd Olsson,Search,yes,3,3,no,0,
-Lou Meidinger,Search,yes,3,3,yes,1,"1,2"
+name,team,can_do_inhours_primary,can_do_inhours_secondary,can_do_inhours_shadow,can_do_oncall_primary,can_do_oncall_secondary,forbidden_weeks
+Oswaldo Bonham,Platform Health,yes,yes,no,yes,yes,
+Jame Truss,Platform Health,yes,yes,no,yes,yes,
+Jarrett Hord,Platform Health,yes,yes,no,no,yes,
+Neil Hockenberry,Platform Health,yes,yes,no,yes,yes,
+Grant Kornfeld,Platform Health,yes,yes,no,no,yes,
+Bessie Engebretson,Platform Health,yes,yes,no,no,no,
+Emanuel Leinen,Platform Health ,yes,yes,no,no,no,
+Sammie Shew,Platform Health,yes,yes,no,no,yes,
+Renae Paton,Platform Health,yes,yes,no,no,yes,"4,5,6"
+Santiago Raine,Platform Health,yes,yes,no,no,yes,
+Chas Stucky,Platform Health,no,no,yes,no,no,
+Ryan Averett,Publishing Access and Security,yes,yes,no,yes,yes,
+Martin Ashby,FE Dev and Accessibility,yes,yes,no,yes,yes,"1,3,4,5,6,7,8"
+Deloris Baldon,FE Dev and Accessibility,yes,yes,no,no,no,
+Nyla Drozd,FE Dev and Accessibility,yes,yes,no,no,no,"1,2"
+Pierre Paulhus,FE Dev and Accessibility,yes,yes,no,no,no,
+Jerome Silveria,Search,yes,yes,no,yes,yes,
+Wilson Friesen,Structured data,yes,yes,no,no,yes,
+Robin Hoose,Search,yes,yes,no,no,yes,
+Floyd Olsson,Search,yes,yes,no,no,yes,
+Lou Meidinger,Search,yes,yes,no,yes,1,"1,2"
 Sharleen Woltz,Search,no,0,1,no,0,
 Ramon Haddock,Search,no,0,1,no,0,
-Jerald Vangundy,Search,yes,2,3,no,0,
-Theodore Calvery,Taxonomy,yes,3,3,no,0,
-Dewey Burgett,Publisher Workflow,yes,3,3,yes,3,
-Irwin Capehart,Publisher Workflow,yes,3,3,no,0,
-Jerold Bayes,Publisher Workflow,yes,3,3,yes,3,"5,6,7,12"
-Annalisa Harrow,Publisher Workflow,yes,3,3,yes,3,
-Dave Allred,Publisher Workflow,yes,3,3,yes,3,
-Rocco Morra,Publisher Workflow,yes,3,3,no,0,
-Eddie Mccollough,Publisher Workflow,no,0,0,no,0,
-Lacy Auyeung,Publisher Workflow,yes,2,3,no,0,
-Glynda Laubscher,Publisher Workflow,no,0,1,no,0,"1,8,10,11,12"
-Jeannine Demos,Step by step,yes,3,3,yes,3,"1,2"
-Vernon Minelli,Step by step,yes,0,1,no,0,
-Temeka Lowy,Step by step,yes,0,3,no,0,
-Benita Kunz,Step by step,yes,0,3,no,0,
-Aubrey Staiger,Personalisation and programme,no,3,3,no,3,
+Jerald Vangundy,Search,yes,yes,no,no,0,
+Theodore Calvery,Taxonomy,yes,yes,no,no,0,
+Dewey Burgett,Publisher Workflow,yes,yes,no,yes,yes,
+Irwin Capehart,Publisher Workflow,yes,yes,no,no,yes,
+Jerold Bayes,Publisher Workflow,yes,yes,no,yes,yes,"5,6,7,12"
+Annalisa Harrow,Publisher Workflow,yes,yes,no,yes,yes,
+Dave Allred,Publisher Workflow,yes,yes,no,yes,yes,
+Rocco Morra,Publisher Workflow,yes,yes,no,no,no,
+Eddie Mccollough,Publisher Workflow,no,0,0,no,no,
+Lacy Auyeung,Publisher Workflow,yes,yes,no,no,yes,
+Glynda Laubscher,Publisher Workflow,no,no,yes,no,no,"1,8,10,11,12"
+Jeannine Demos,Step by step,yes,yes,no,yes,yes,"1,2"
+Vernon Minelli,Step by step,yes,yes,no,no,no,
+Temeka Lowy,Step by step,yes,yes,no,no,yes,
+Benita Kunz,Step by step,yes,yes,no,no,no,
+Aubrey Staiger,Personalisation and programme,no,yes,no,no,no,
