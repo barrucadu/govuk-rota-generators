@@ -20,15 +20,6 @@ class Rota:
 
         raise NotImplementedError()
 
-    def post_process(self, assignments):
-        """Transform a single period's assignments.
-
-        Mutates the parameter.
-        """
-
-        pass
-
-
 
 def basic_rota(title, num_periods, person_names, role_names, optional_roles=[], personal_leave={}, sense=pulp.LpMaximize, randomise=True):
     """Generate a basic rota problem that ensures:

@@ -40,7 +40,6 @@ def print_rota_csv(rota):
                 if rota.is_assigned(period, person, role):
                     r[role.name.lower()] = person
 
-        rota.post_process(r)
         writer.writerow(r)
 
 

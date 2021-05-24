@@ -33,23 +33,6 @@ class Govuk2ndLineRota(Rota):
     def is_assigned(self, week, person, role):
         return pulp.value(self.model[week, person, role.name]) == 1
 
-    def post_process(self, assignments):
-        """Implement constraints 2.1.3 and 2.5.3."""
-
-        # constraint [2.1.3]
-        primary = assignments["primary"]
-        secondary = assignments["secondary"]
-        if self.people[primary].num_times_inhours < self.people[secondary].num_times_inhours:
-            assignments["primary"] = secondary
-            assignments["secondary"] = primary
-
-        # constraint [2.5.3]
-        primary_oncall = assignments["primary_oncall"]
-        secondary_oncall = assignments["secondary_oncall"]
-        if self.people[secondary_oncall].num_times_oncall < self.people[primary_oncall].num_times_oncall:
-            assignments["primary_oncall"] = secondary_oncall
-            assignments["secondary_oncall"] = primary_oncall
-
 
 def generate_model(
     people,
@@ -62,17 +45,7 @@ def generate_model(
     max_times_shadow=3,
     optimise=True,
 ):
-    """Generate the mathematical model of the rota problem.
-
-    Constraints [1.2.3] (primary exp >= secondary exp) and [1.6.3]
-    (oncall secondary exp >= oncall primary exp) are not enforced
-    here, as they greatly slow down the solver (several seconds ->
-    several minutes and counting), and the other constraints are
-    sufficient to ensure qualified people are put in these roles.
-    Instead, the 'Rota.post_process' function, called by the
-    'printer.generate_rota_csv' function, swaps the people if need
-    be.
-    """
+    """Generate the mathematical model of the rota problem."""
 
     prob, rota, assigned = basic_rota(
         "2ndline rota",
