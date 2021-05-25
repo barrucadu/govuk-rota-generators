@@ -11,22 +11,22 @@ Usage:
 
 $ time python3 src demo.csv
 week,primary,secondary,shadow,primary_oncall,secondary_oncall
-1,Annalisa Harrow,Temeka Lowy,,Jerome Silveria,Dave Allred
-2,Renae Paton,Wilson Friesen,,Ryan Averett,Jerold Bayes
-3,Jeannine Demos,Jerald Vangundy,,Dave Allred,Annalisa Harrow
-4,Irwin Capehart,Jarrett Hord,,Lou Meidinger,Jame Truss
-5,Jerome Silveria,Benita Kunz,,Dewey Burgett,Ryan Averett
-6,Deloris Baldon,Emanuel Leinen,,Lou Meidinger,Annalisa Harrow
-7,Dave Allred,Floyd Olsson,,Dewey Burgett,Jeannine Demos
-8,Nyla Drozd,Grant Kornfeld,,Ryan Averett,Annalisa Harrow
-9,Lou Meidinger,Lacy Auyeung,,Dave Allred,Oswaldo Bonham
-10,Martin Ashby,Sammie Shew,Ryan Averett,Jerold Bayes,Jerome Silveria
-11,Theodore Calvery,Robin Hoose,Vernon Minelli,Lou Meidinger,Dewey Burgett
-12,Rocco Morra,Santiago Raine,Pierre Paulhus,Neil Hockenberry,Oswaldo Bonham
+1,Neil Hockenberry,Aubrey Staiger,Sharleen Woltz,Oswaldo Bonham,Jarrett Hord
+2,Deloris Baldon,Rocco Morra,,Martin Ashby,Robin Hoose
+3,Emanuel Leinen,Vernon Minelli,,Lou Meidinger,Renae Paton
+4,Floyd Olsson,Irwin Capehart,,Dewey Burgett,Jerold Bayes
+5,Pierre Paulhus,Sammie Shew,,Lou Meidinger,Wilson Friesen
+6,Jerome Silveria,Benita Kunz,Glynda Laubscher,Oswaldo Bonham,Temeka Lowy
+7,Jame Truss,Nyla Drozd,,Annalisa Harrow,Renae Paton
+8,Ryan Averett,Jerald Vangundy,,Jeannine Demos,Jerold Bayes
+9,Theodore Calvery,Temeka Lowy,Chas Stucky,Dave Allred,Grant Kornfeld
+10,Martin Ashby,Lacy Auyeung,Ramon Haddock,Annalisa Harrow,Oswaldo Bonham
+11,Bessie Engebretson,Wilson Friesen,,Jeannine Demos,Jerold Bayes
+12,Dave Allred,Lou Meidinger,,Annalisa Harrow,Santiago Raine
 
-real    33.38s
-user    32.99s
-sys     0.36s
+real    0m24.531s
+user    0m24.408s
+sys     0m0.121s
 ```
 
 See the `docs` directory for explanations of how the rotas are defined
