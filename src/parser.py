@@ -28,8 +28,8 @@ def govuk_2ndline(rn, row):
 
     errors = []
 
-    if len(row) != 8:
-        errors.append(f"Row {rn}: should have 8 elements (got {len(row)})")
+    if len(row) != 10:
+        errors.append(f"Row {rn}: should have 10 elements (got {len(row)})")
         raise CSVException(errors)
 
     person = row[0].strip()
@@ -37,9 +37,11 @@ def govuk_2ndline(rn, row):
     can_do_inhours_primary_str = row[2].strip()
     can_do_inhours_secondary_str = row[3].strip()
     can_do_inhours_shadow_str = row[4].strip()
-    can_do_oncall_primary_str = row[5].strip()
-    can_do_oncall_secondary_str = row[6].strip()
-    forbidden_weeks_str = row[7].strip()
+    can_do_inhours_primary_standby_str = row[5].strip()
+    can_do_inhours_secondary_standby_str = row[6].strip()
+    can_do_oncall_primary_str = row[7].strip()
+    can_do_oncall_secondary_str = row[8].strip()
+    forbidden_weeks_str = row[9].strip()
 
     try:
         can_do_inhours_primary = to_bool(can_do_inhours_primary_str)
@@ -55,6 +57,16 @@ def govuk_2ndline(rn, row):
         can_do_inhours_shadow = to_bool(can_do_inhours_shadow_str)
     except ValueError:
         errors.append(f"Row {rn}: 'can_do_inhours_shadow' field should be a boolean (got '{can_do_inhours_shadow_str}')")
+
+    try:
+        can_do_inhours_primary_standby = to_bool(can_do_inhours_primary_standby_str)
+    except ValueError:
+        errors.append(f"Row {rn}: 'can_do_inhours_primary_standby' field should be a boolean (got '{can_do_inhours_primary_standby_str}')")
+
+    try:
+        can_do_inhours_secondary_standby = to_bool(can_do_inhours_secondary_standby_str)
+    except ValueError:
+        errors.append(f"Row {rn}: 'can_do_inhours_secondary_standby' field should be a boolean (got '{can_do_inhours_secondary_standby_str}')")
 
     try:
         can_do_oncall_primary = to_bool(can_do_oncall_primary_str)
@@ -80,6 +92,8 @@ def govuk_2ndline(rn, row):
             can_do_inhours_primary=can_do_inhours_primary,
             can_do_inhours_secondary=can_do_inhours_secondary,
             can_do_inhours_shadow=can_do_inhours_shadow,
+            can_do_inhours_primary_standby=can_do_inhours_primary_standby,
+            can_do_inhours_secondary_standby=can_do_inhours_secondary_standby,
             can_do_oncall_primary=can_do_oncall_primary,
             can_do_oncall_secondary=can_do_oncall_secondary,
             forbidden_weeks=forbidden_weeks,

@@ -93,6 +93,8 @@ Constraints
    4. not be assigned more than `max-on-call-shifts` out-of-hours roles in total
    5. not be on in-hours support in the same week that someone else from their team is also on in-hours support
    6. not be on in-hours support in the week after someone else from their team is also on in-hours support
+   7. not be assigned more than `max_inhours_standby` in-hours roles in total
+   8. not be on in-hours standby support in the same week that someone else from their team is also on in-hours standby support
 
 
 Objectives
