@@ -95,6 +95,7 @@ Constraints
    6. not be on in-hours support in the week after someone else from their team is also on in-hours support
    7. not be assigned more than `max_inhours_standby` in-hours roles in total
    8. not be on in-hours standby support in the same week that someone else from their team is also on in-hours standby support
+   9. not be on out-of-hours support in the same week that someone else from their team is also on out-of-hours support
 
 
 Objectives

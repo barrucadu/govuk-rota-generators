@@ -130,6 +130,14 @@ def generate_model(
                     <= 1
                 )
 
+        # [2.9] Not be on out-of-hours support in the same week that someone else from their team is also on out-of-hours support
+        for week in range(num_weeks):
+            for person2, p2 in people.items():
+                if person == person2:
+                    continue
+                if p.team != p2.team:
+                    continue
+                prob += pulp.lpSum(rota[week, person, role.name] for role in Roles if role.value.oncall) + pulp.lpSum(rota[week, person2, role.name] for role in Roles if role.value.oncall) <= 1
 
     # ## Optimisations
 
