@@ -8,21 +8,34 @@ from rota import Rota, basic_rota, NoSatisfyingRotaError
 # A person who can appear in the rota.  People have no names, as
 # 'generate_model' is given a dict 'name -> person'.
 Person = collections.namedtuple(
-    "Person", ["team", "can_do_inhours_primary", "can_do_inhours_secondary", "can_do_inhours_shadow", "can_do_oncall_primary", "can_do_oncall_secondary", "forbidden_weeks"]
+    "Person",
+    [
+        "team",
+        "can_do_inhours_primary",
+        "can_do_inhours_secondary",
+        "can_do_inhours_shadow",
+        "can_do_inhours_primary_standby",
+        "can_do_inhours_secondary_standby",
+        "can_do_oncall_primary",
+        "can_do_oncall_secondary",
+        "forbidden_weeks",
+    ],
 )
 
 # A role
-Role = collections.namedtuple("Role", ["n", "inhours", "oncall", "mandatory"])
+Role = collections.namedtuple("Role", ["n", "inhours", "inhours_standby", "oncall", "mandatory"])
 
 
 class Roles(enum.Enum):
     """All the different types of role."""
 
-    PRIMARY = Role(0, True, False, True)
-    SECONDARY = Role(1, True, False, True)
-    SHADOW = Role(2, True, False, False)
-    PRIMARY_ONCALL = Role(3, False, True, True)
-    SECONDARY_ONCALL = Role(4, False, True, True)
+    PRIMARY = Role(0, True, False, False, True)
+    SECONDARY = Role(1, True, False, False, True)
+    SHADOW = Role(2, True, False, False, False)
+    PRIMARY_ONCALL = Role(3, False, False, True, True)
+    SECONDARY_ONCALL = Role(4, False, False, True, True)
+    PRIMARY_STANDBY = Role(5, False, True, False, True)
+    SECONDARY_STANDBY = Role(6, False, True, False, True)
 
 
 class Govuk2ndLineRota(Rota):
@@ -40,6 +53,7 @@ def generate_model(
     people,
     num_weeks=2,
     max_inhours_shifts_per_person=1,
+    max_inhours_standby_shifts_per_person=1,
     max_oncall_shifts_per_person=3,
     optimise=True,
 ):
@@ -66,6 +80,10 @@ def generate_model(
                 prob += rota[week, person, Roles.SECONDARY.name] == 0
             if not p.can_do_inhours_shadow:
                 prob += rota[week, person, Roles.SHADOW.name] == 0
+            if not p.can_do_inhours_primary_standby:
+                prob += rota[week, person, Roles.PRIMARY_STANDBY.name] == 0
+            if not p.can_do_inhours_secondary_standby:
+                prob += rota[week, person, Roles.SECONDARY_STANDBY.name] == 0
             if not p.can_do_oncall_primary:
                 prob += rota[week, person, Roles.PRIMARY_ONCALL.name] == 0
             if not p.can_do_oncall_secondary:
@@ -95,6 +113,31 @@ def generate_model(
                     prob += (
                         pulp.lpSum(rota[week, person, role.name] for role in Roles if role.value.inhours) + pulp.lpSum(rota[week - 1, person2, role.name] for role in Roles if role.value.inhours) <= 1
                     )
+
+        # [2.7] Not to be assigned more than max_inhours_standby_shifts_per_person in-hours roles in total
+        prob += pulp.lpSum(rota[week, person, role.name] for week in range(num_weeks) for role in Roles if role.value.inhours_standby) <= max_inhours_standby_shifts_per_person
+
+        # [2.8] Not be on in-hours standby support in the same week that someone else from their team is also on in-hours standby support
+        for week in range(num_weeks):
+            for person2, p2 in people.items():
+                if person == person2:
+                    continue
+                if p.team != p2.team:
+                    continue
+                prob += (
+                    pulp.lpSum(rota[week, person, role.name] for role in Roles if role.value.inhours_standby)
+                    + pulp.lpSum(rota[week, person2, role.name] for role in Roles if role.value.inhours_standby)
+                    <= 1
+                )
+
+        # [2.9] Not be on out-of-hours support in the same week that someone else from their team is also on out-of-hours support
+        for week in range(num_weeks):
+            for person2, p2 in people.items():
+                if person == person2:
+                    continue
+                if p.team != p2.team:
+                    continue
+                prob += pulp.lpSum(rota[week, person, role.name] for role in Roles if role.value.oncall) + pulp.lpSum(rota[week, person2, role.name] for role in Roles if role.value.oncall) <= 1
 
     # ## Optimisations
 
