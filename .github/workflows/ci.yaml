@@ -27,3 +27,8 @@ jobs:
       - name: Check Dependencies
         run: |
           pip install -r requirements-freeze.txt
+     - name: Build Demo Rota
+        run: |
+          set -ex
+          apt-get update && apt-get install -y coinor-cbc
+          python3 src demo.csv
