@@ -13,7 +13,7 @@ def to_bool(s):
     """A stricter boolification function than 'bool'."""
 
     true_strings = ["true", "yes", "y", "1"]
-    false_strings = ["false", "no", "n", "0"]
+    false_strings = ["false", "no", "n", "0", ""]
 
     if s.lower() in true_strings:
         return True
